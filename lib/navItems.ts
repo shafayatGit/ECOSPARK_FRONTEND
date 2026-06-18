@@ -13,11 +13,6 @@ export const getCommonNavItems = (role: UserRole): NavSection[] => {
           icon: "Home",
         },
         {
-          title: "Dashboard",
-          href: defaultDashboard,
-          icon: "LayoutDashboard",
-        },
-        {
           title: "My Profile",
           href: `/my-profile`,
           icon: "User",
@@ -43,7 +38,7 @@ export const adminNavItems: NavSection[] = [
     items: [
       {
         title: "Admins",
-        href: "/admin/dashboard/admins-management",
+        href: "/admin/dashboard",
         icon: "Shield",
       },
 
@@ -55,47 +50,22 @@ export const adminNavItems: NavSection[] = [
     ],
   },
   {
-    title: "Hospital Management",
+    title: "Ideas Management",
     items: [
       {
-        title: "Appointments",
-        href: "/admin/dashboard/appointments-management",
+        title: "Idea-Management",
+        href: "/admin/dashboard/idea-management",
         icon: "Calendar",
       },
       {
-        title: "Schedules",
-        href: "/admin/dashboard/schedules-management",
+        title: "Catagory-Management",
+        href: "/admin/dashboard/category-management",
         icon: "Clock",
       },
       {
-        title: "Specialties",
-        href: "/admin/dashboard/specialties-management",
-        icon: "Hospital",
-      },
-      {
-        title: "Doctor Schedules",
-        href: "/admin/dashboard/doctor-schedules-managament",
-        icon: "CalendarClock",
-      },
-      {
-        title: "Doctor Specialties",
-        href: "/admin/dashboard/doctor-specialties-management",
-        icon: "Stethoscope",
-      },
-      {
-        title: "Payments",
-        href: "/admin/dashboard/payments-management",
+        title: "Purchase-Management",
+        href: "/admin/dashboard/purchase-management",
         icon: "CreditCard",
-      },
-      {
-        title: "Prescriptions",
-        href: "/admin/dashboard/prescriptions-management",
-        icon: "FileText",
-      },
-      {
-        title: "Reviews",
-        href: "/admin/dashboard/reviews-management",
-        icon: "Star",
       },
     ],
   },
@@ -103,32 +73,27 @@ export const adminNavItems: NavSection[] = [
 
 export const memberNavItems: NavSection[] = [
   {
-    title: "Appointments",
+    title: "Ideas",
     items: [
       {
-        title: "My Appointments",
-        href: "/dashboard/my-appointments",
-        icon: "Calendar",
+        title: "My Ideas",
+        href: "/dashboard/my-ideas",
+        icon: "Lightbulb",
       },
       {
-        title: "Book Appointment",
-        href: "/dashboard/book-appointments",
+        title: "Create Idea",
+        href: "/dashboard/create-idea",
         icon: "ClipboardList",
       },
     ],
   },
   {
-    title: "Medical Records",
+    title: "Purchases",
     items: [
       {
-        title: "My Prescriptions",
-        href: "/dashboard/my-prescriptions",
+        title: "My Purchase Ideas",
+        href: "/dashboard/my-purchases",
         icon: "FileText",
-      },
-      {
-        title: "Health Records",
-        href: "/dashboard/health-records",
-        icon: "Activity",
       },
     ],
   },
