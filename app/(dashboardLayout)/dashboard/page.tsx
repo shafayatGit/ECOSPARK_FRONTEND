@@ -1,7 +1,7 @@
-import React from "react";
+import MemberDashboardContent from "@/components/modules/Dashboard/Member/MemberDashboardContent";
 
 const MemberDashboardPage = () => {
-  return <div></div>;
+  return <MemberDashboardContent />;
 };
 
 export default MemberDashboardPage;

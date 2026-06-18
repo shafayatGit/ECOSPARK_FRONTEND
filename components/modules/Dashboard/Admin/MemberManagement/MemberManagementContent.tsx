@@ -335,7 +335,7 @@ const MemberManagementContent = () => {
                           <UserInfoCell
                             name={user.name}
                             email={user.email}
-                            profilePhoto={user.image}
+                            profilePhoto={user.image ?? undefined}
                           />
                         </TableCell>
                         <TableCell>

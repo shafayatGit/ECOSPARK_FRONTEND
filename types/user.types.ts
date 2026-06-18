@@ -11,3 +11,10 @@ export interface UserInfo {
   status: UserStatus;
   createdAt: string;
 }
+
+export interface UserProfile extends Omit<UserInfo, "image"> {
+  image?: string | null;
+  emailVerified: boolean;
+  needPasswordChange: boolean;
+  updatedAt: string;
+}

@@ -36,7 +36,23 @@ export const userListQuerySchema = baseListQuerySchema.extend({
   status: z.enum(["ACTIVE", "INACTIVE", "BLOCKED"]).optional(),
 });
 
+export const memberIdeaListQuerySchema = baseListQuerySchema.extend({
+  status: z.string().optional(),
+  isPaid: z.enum(["true", "false"]).optional(),
+  categoryId: z.string().optional(),
+});
+
+export const memberPurchaseListQuerySchema = baseListQuerySchema.extend({
+  paymentStatus: z.enum(["PENDING", "COMPLETED", "FAILED"]).optional(),
+  gateway: z.string().optional(),
+  ideaId: z.string().optional(),
+});
+
 export type IAdminIdeaListQuery = z.infer<typeof adminIdeaListQuerySchema>;
 export type ICategoryListQuery = z.infer<typeof categoryListQuerySchema>;
 export type IPurchaseListQuery = z.infer<typeof purchaseListQuerySchema>;
 export type IUserListQuery = z.infer<typeof userListQuerySchema>;
+export type IMemberIdeaListQuery = z.infer<typeof memberIdeaListQuerySchema>;
+export type IMemberPurchaseListQuery = z.infer<
+  typeof memberPurchaseListQuerySchema
+>;

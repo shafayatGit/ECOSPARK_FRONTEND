@@ -2,11 +2,26 @@
 
 import { cookies } from "next/headers";
 import { setTokenInCookies } from "../lib/tokenUtils";
+import { UserProfile } from "@/types/user.types";
+import {
+  IChangePasswordPayload,
+  IUpdateProfilePayload,
+  changePasswordSchema,
+  updateProfileSchema,
+} from "@/zod/auth.validation";
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 if (!BASE_API_URL) {
   throw new Error("NEXT_PUBLIC_API_BASE_URL is not defined");
+}
+
+async function getAuthCookieHeader() {
+  const cookieStore = await cookies();
+  return cookieStore
+    .getAll()
+    .map((cookie) => `${cookie.name}=${cookie.value}`)
+    .join("; ");
 }
 
 // export async function getNewTokensWithRefreshToken(
@@ -53,7 +68,6 @@ export async function getUserInfo() {
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
     const sessionToken = cookieStore.get("better-auth.session_token")?.value;
-    // console.log(`SessionToken in getUserInfo: ${sessionToken}`); // Debug log
 
     if (!accessToken) {
       return null;
@@ -78,5 +92,134 @@ export async function getUserInfo() {
   } catch (error) {
     console.error("Error fetching user info:", error);
     return null;
+  }
+}
+
+export async function updateProfile(payload: IUpdateProfilePayload) {
+  const parsed = updateProfileSchema.safeParse(payload);
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: parsed.error.issues[0]?.message || "Invalid profile data.",
+      data: null,
+    };
+  }
+
+  try {
+    const res = await fetch(`${BASE_API_URL}/api/auth/update-user`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: await getAuthCookieHeader(),
+      },
+      body: JSON.stringify(parsed.data),
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: result?.message || "Failed to update profile.",
+        data: null,
+      };
+    }
+
+    return {
+      success: true,
+      message: "Profile updated successfully.",
+      data: result,
+    };
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Failed to update profile.";
+    return {
+      success: false,
+      message,
+      data: null,
+    };
+  }
+}
+
+export async function changePassword(payload: IChangePasswordPayload) {
+  const parsed = changePasswordSchema.safeParse(payload);
+
+  if (!parsed.success) {
+    return {
+      success: false,
+      message: parsed.error.issues[0]?.message || "Invalid password data.",
+      data: null,
+    };
+  }
+
+  try {
+    const res = await fetch(`${BASE_API_URL}/api/auth/change-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: await getAuthCookieHeader(),
+      },
+      body: JSON.stringify({
+        currentPassword: parsed.data.currentPassword,
+        newPassword: parsed.data.newPassword,
+        revokeOtherSessions: true,
+      }),
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: result?.message || "Failed to change password.",
+        data: null,
+      };
+    }
+
+    return {
+      success: true,
+      message: "Password changed successfully.",
+      data: result,
+    };
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Failed to change password.";
+    return {
+      success: false,
+      message,
+      data: null,
+    };
+  }
+}
+
+export async function logoutUser() {
+  try {
+    const res = await fetch(`${BASE_API_URL}/auth/logout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: await getAuthCookieHeader(),
+      },
+    });
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: "Failed to log out.",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Logged out successfully.",
+    };
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Failed to log out.";
+    return {
+      success: false,
+      message,
+    };
   }
 }
