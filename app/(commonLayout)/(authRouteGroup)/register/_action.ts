@@ -42,11 +42,8 @@ export const registerAction = async (
     }
 
     const { accessToken, refreshToken, token } = response.data;
-    
+
     // Save authentication details in cookies
-    if (accessToken) await setTokenInCookies("accessToken", accessToken);
-    if (refreshToken) await setTokenInCookies("refreshToken", refreshToken);
-    if (token) await setTokenInCookies("better-auth.session_token", token, 24 * 60 * 60);
 
     targetPath = `/verify-email?email=${encodeURIComponent(parsedPayload.data.email)}`;
   } catch (error: any) {

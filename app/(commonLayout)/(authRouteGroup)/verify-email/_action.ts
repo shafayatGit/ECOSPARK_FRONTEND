@@ -3,7 +3,10 @@
 
 import { httpClient } from "@/lib/axios/httpClient";
 import { ApiErrorResponse } from "@/types/api.types";
-import { verifyEmailZodSchema, IVerifyEmailPayload } from "@/zod/auth.validation";
+import {
+  verifyEmailZodSchema,
+  IVerifyEmailPayload,
+} from "@/zod/auth.validation";
 import { getDefaultDashboardRoute, UserRole } from "@/lib/authUtils";
 import { jwtUtils } from "@/lib/jwtUtils";
 import { cookies } from "next/headers";
@@ -13,7 +16,9 @@ export type IVerifyEmailActionSuccess = {
   redirectPath: string;
 };
 
-export type IVerifyEmailActionResult = IVerifyEmailActionSuccess | ApiErrorResponse;
+export type IVerifyEmailActionResult =
+  | IVerifyEmailActionSuccess
+  | ApiErrorResponse;
 
 export const verifyEmailAction = async (
   payload: IVerifyEmailPayload,
