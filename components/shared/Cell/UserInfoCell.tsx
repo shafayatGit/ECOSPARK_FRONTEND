@@ -2,7 +2,7 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/src/components/ui/avatar";
+} from "@/components/ui/avatar";
 
 interface UserInfoCellProps {
   name: string;

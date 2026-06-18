@@ -1,11 +1,8 @@
+import MemberManagementContent from "@/components/modules/Dashboard/Admin/MemberManagement/MemberManagementContent";
 import React from "react";
 
 const MemberManagementPage = () => {
-  return (
-    <div>
-      <h1>Member Management</h1>
-    </div>
-  );
+  return <MemberManagementContent />;
 };
 
 export default MemberManagementPage;

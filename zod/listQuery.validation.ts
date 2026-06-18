@@ -31,6 +31,12 @@ export const purchaseListQuerySchema = baseListQuerySchema.extend({
   ideaId: z.string().optional(),
 });
 
+export const userListQuerySchema = baseListQuerySchema.extend({
+  role: z.enum(["MEMBER", "ADMIN"]).optional(),
+  status: z.enum(["ACTIVE", "INACTIVE", "BLOCKED"]).optional(),
+});
+
 export type IAdminIdeaListQuery = z.infer<typeof adminIdeaListQuerySchema>;
 export type ICategoryListQuery = z.infer<typeof categoryListQuerySchema>;
 export type IPurchaseListQuery = z.infer<typeof purchaseListQuerySchema>;
+export type IUserListQuery = z.infer<typeof userListQuerySchema>;
