@@ -21,6 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { formatCurrency, truncateText } from "@/lib/formatters";
 import {
   TopIdeaByPurchase,
@@ -55,7 +56,7 @@ const TopIdeasSection = ({ byVotes, byPurchases }: TopIdeasSectionProps) => {
               </EmptyHeader>
             </Empty>
           ) : (
-            <div className="overflow-x-auto">
+            <ScrollArea className="w-full whitespace-nowrap rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -101,7 +102,8 @@ const TopIdeasSection = ({ byVotes, byPurchases }: TopIdeasSectionProps) => {
                   ))}
                 </TableBody>
               </Table>
-            </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           )}
         </CardContent>
       </Card>
@@ -125,7 +127,7 @@ const TopIdeasSection = ({ byVotes, byPurchases }: TopIdeasSectionProps) => {
               </EmptyHeader>
             </Empty>
           ) : (
-            <div className="overflow-x-auto">
+            <ScrollArea className="w-full whitespace-nowrap rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -155,7 +157,8 @@ const TopIdeasSection = ({ byVotes, byPurchases }: TopIdeasSectionProps) => {
                   ))}
                 </TableBody>
               </Table>
-            </div>
+              <ScrollBar orientation="horizontal" />
+            </ScrollArea>
           )}
         </CardContent>
       </Card>

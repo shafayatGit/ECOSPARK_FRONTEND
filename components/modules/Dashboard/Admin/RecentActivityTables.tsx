@@ -22,6 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import DateCell from "@/components/shared/Cell/DataCell";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { formatCurrency, truncateText } from "@/lib/formatters";
 import { RecentPurchase, RecentUser } from "@/types/dashboard.types";
 import { ShoppingBag, Users } from "lucide-react";
@@ -51,7 +52,7 @@ export const RecentUsersTable = ({ users }: RecentUsersTableProps) => {
             </EmptyHeader>
           </Empty>
         ) : (
-          <div className="overflow-x-auto">
+          <ScrollArea className="w-full whitespace-nowrap rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -97,7 +98,8 @@ export const RecentUsersTable = ({ users }: RecentUsersTableProps) => {
                 ))}
               </TableBody>
             </Table>
-          </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         )}
       </CardContent>
     </Card>
@@ -131,7 +133,7 @@ export const RecentPurchasesTable = ({
             </EmptyHeader>
           </Empty>
         ) : (
-          <div className="overflow-x-auto">
+          <ScrollArea className="w-full whitespace-nowrap rounded-md border">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -178,7 +180,8 @@ export const RecentPurchasesTable = ({
                 ))}
               </TableBody>
             </Table>
-          </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         )}
       </CardContent>
     </Card>
