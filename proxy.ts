@@ -16,20 +16,32 @@ export async function proxy(request: NextRequest) {
     const accessToken = request.cookies.get("accessToken")?.value;
     const refreshToken = request.cookies.get("refreshToken")?.value;
 
-    const decodedAccessToken =
-      accessToken &&
-      jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string)
-        .data;
+    const jwtSecret = process.env.JWT_ACCESS_SECRET || process.env.ACCESS_TOKEN_SECRET;
 
-    const isValidAccessToken =
-      accessToken &&
-      jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string)
-        .success;
+    let decodedAccessToken = null;
+    let isValidAccessToken = false;
+
+    if (accessToken) {
+      if (jwtSecret) {
+        const verifyResult = jwtUtils.verifyToken(accessToken, jwtSecret);
+        if (verifyResult.success) {
+          decodedAccessToken = verifyResult.data;
+          isValidAccessToken = true;
+        }
+      } else {
+        // Fallback to client-side decode and expiration check
+        const decoded = jwtUtils.decodedToken(accessToken);
+        if (decoded && (!decoded.exp || decoded.exp * 1000 > Date.now())) {
+          decodedAccessToken = decoded;
+          isValidAccessToken = true;
+        }
+      }
+    }
 
     let userRole: UserRole | null = null;
 
     if (decodedAccessToken) {
-      userRole = decodedAccessToken.role as UserRole;
+      userRole = (decodedAccessToken as any).role as UserRole;
       //   console.log(`DecodedAccessToken: ${userRole}`); // Debug log
     }
 
@@ -41,7 +53,7 @@ export async function proxy(request: NextRequest) {
     if (
       isValidAccessToken &&
       refreshToken &&
-      (await isTokenExpiringSoon(accessToken))
+      (await isTokenExpiringSoon(accessToken!))
     ) {
       const requestHeaders = new Headers(request.headers);
 
@@ -174,6 +186,17 @@ export async function proxy(request: NextRequest) {
               request.url,
             ),
           );
+        }
+      } else {
+        // Token is invalid/expired on backend
+        if (routerOwner !== null) {
+          const loginUrl = new URL("/login", request.url);
+          loginUrl.searchParams.set("redirect", pathname);
+          const response = NextResponse.redirect(loginUrl);
+          response.cookies.delete("accessToken");
+          response.cookies.delete("refreshToken");
+          response.cookies.delete("better-auth.session_token");
+          return response;
         }
       }
     }

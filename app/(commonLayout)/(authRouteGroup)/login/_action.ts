@@ -82,12 +82,8 @@ export const loginAction = async (
     }
   }
 
-  if (targetPath) {
-    redirect(targetPath);
-  }
-
   return {
-    success: false,
-    message: "An unexpected error occurred",
+    success: true,
+    redirectPath: targetPath,
   };
 };
