@@ -1,11 +1,7 @@
-import React from 'react'
+import AdminDashboardContent from "@/components/modules/Dashboard/AdminDashboardContent";
 
-const AdminDasboardPage = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
+const AdminDashboardPage = () => {
+  return <AdminDashboardContent />;
+};
 
-export default AdminDasboardPage
+export default AdminDashboardPage;

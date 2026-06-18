@@ -1,19 +1,13 @@
-import { Geist, Geist_Mono, Source_Sans_3, DM_Sans } from "next/font/google";
+import { Geist, Geist_Mono, Source_Sans_3, DM_Sans, Figtree } from "next/font/google";
 
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import QueryProviders from "@/providers/QueryProvider";
 
-const dmSansHeading = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-heading",
-});
+const dmSansHeading = DM_Sans({subsets:['latin'],variable:'--font-heading'});
 
-const sourceSans3 = Source_Sans_3({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
+const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -33,7 +27,7 @@ export default function RootLayout({
         "antialiased",
         fontMono.variable,
         "font-sans",
-        sourceSans3.variable,
+        figtree.variable,
         dmSansHeading.variable,
       )}
     >
