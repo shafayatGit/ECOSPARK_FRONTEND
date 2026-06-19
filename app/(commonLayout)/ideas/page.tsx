@@ -2,8 +2,11 @@ import { HeroHeader } from "@/components/shared/Header";
 import IdeasListContent from "@/components/modules/Ideas/IdeasListContent";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
+import { getUserInfo } from "@/service/auth.service";
+import { UserInfo } from "@/types/user.types";
 
-const IdeasPage = () => {
+const IdeasPage = async () => {
+  const user: UserInfo = await getUserInfo();
   return (
     <div className="flex min-h-screen  w-full flex-col">
       <main className="grow">
@@ -20,7 +23,7 @@ const IdeasPage = () => {
             </div>
           }
         >
-          <IdeasListContent />
+          <IdeasListContent user={user} />
         </Suspense>
       </main>
     </div>

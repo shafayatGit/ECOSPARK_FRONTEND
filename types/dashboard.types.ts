@@ -198,3 +198,26 @@ export interface IAdminDashboardData {
   recent: DashboardRecent;
   topIdeas: DashboardTopIdeas;
 }
+
+export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED";
+
+export interface isPaidOrNot {
+  message: string;
+  checkoutUrl: string;
+  purchase: {
+    id: string;
+    transactionId: string;
+    paymentStatus: PaymentStatus;
+    amountPaid: number;
+    gateway: string;
+    stripeEventId: string | null;
+    completedAt: string | null;
+    createdAt: string | null;
+    userId: string;
+    ideaId: string;
+  };
+}
+
+export interface IPurchaseIdea {
+  ideaId: string;
+}

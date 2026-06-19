@@ -24,7 +24,7 @@ import { getCategories } from "@/service/category.service";
 import { getPublicIdeas } from "@/service/publicIdeas.service";
 import { IPublicIdeaListQuery } from "@/zod/listQuery.validation";
 import { useQuery } from "@tanstack/react-query";
-import { AlertCircle, Lightbulb, RefreshCw, X } from "lucide-react";
+import { AlertCircle, Lightbulb, RefreshCw, User, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -46,9 +46,10 @@ interface IdeasListContentProps {
   initialCategory?: string;
 }
 
-const IdeasListContent = ({ initialCategory }: IdeasListContentProps) => {
+const IdeasListContent = ({ initialCategory, user }: IdeasListContentProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  console.log(user);
 
   const categoryParam =
     searchParams.get("category") ||
@@ -299,7 +300,7 @@ const IdeasListContent = ({ initialCategory }: IdeasListContentProps) => {
         <>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
             {ideas.map((idea) => (
-              <IdeaCard key={idea.id} idea={idea} />
+              <IdeaCard key={idea.id} idea={idea} user={user} />
             ))}
           </div>
 

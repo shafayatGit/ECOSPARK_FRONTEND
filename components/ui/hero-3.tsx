@@ -103,9 +103,9 @@ export function HeroSection() {
                 <AnimatedGroup variants={transitionVariants}>
                   <Link
                     href="#link"
-                    className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
+                    className="hidden md:flex hover:bg-background dark:hover:border-t-border group mx-auto w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
                   >
-                    <span className="text-foreground text-sm">
+                    <span className="text-foreground text-[12px] md:text-sm">
                       Introducing EcoSpark Hub: Your Launchpad for Sustainable
                       Innovation
                     </span>
@@ -123,10 +123,10 @@ export function HeroSection() {
                     </div>
                   </Link>
 
-                  <h1 className="mt-8 max-w-4xl mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
+                  <h1 className="mt-8 max-w-4xl mx-auto text-balance text-4xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
                     Turn Your Sustainable Ideas Into Real Impact
                   </h1>
-                  <p className="mx-auto mt-8 max-w-2xl text-balance text-lg">
+                  <p className="mx-auto mt-8 max-w-2xl text-balance text-sm md:text-lg">
                     EcoSpark Hub is where changemakers share, refine, and fund
                     the next wave of sustainability projects — from cutting
                     plastic waste to powering communities with solar. Submit
@@ -161,7 +161,9 @@ export function HeroSection() {
                       className="rounded-xl px-5 text-base"
                     >
                       <Link href="/ideas">
-                        <span className="text-nowrap">Explore Ideas</span>
+                        <span className="text-nowrap text-xs md:text-lg">
+                          Explore Ideas
+                        </span>
                       </Link>
                     </Button>
                   </div>
@@ -173,7 +175,9 @@ export function HeroSection() {
                     className="h-10.5 rounded-xl px-5"
                   >
                     <Link href="/register">
-                      <span className="text-nowrap">Share Your Idea</span>
+                      <span className="text-nowrap text-xs md:text-lg">
+                        Share Your Idea
+                      </span>
                     </Link>
                   </Button>
                 </AnimatedGroup>
@@ -195,12 +199,12 @@ export function HeroSection() {
                 item: transitionVariants.item,
               }}
             >
-              <div className="relative -mr-56 mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
+              <div className="relative mt-8 overflow-hidden px-2 sm:mr-0 sm:mt-12 md:mt-20">
                 <div
                   aria-hidden
-                  className="bg-gradient-to-b to-background absolute inset-0 z-10 from-transparent from-35%"
+                  className="bg-linear-to-b to-background absolute inset-0 z-10 from-transparent from-35%"
                 />
-                <div className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-6xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
+                <div className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-7xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
                   <img
                     className="bg-background aspect-15/8 relative hidden rounded-2xl dark:block"
                     src="/banner.png"
@@ -215,19 +219,6 @@ export function HeroSection() {
         </section>
         <section className="bg-background pb-16 pt-16 md:pb-32">
           <TrustedBrands />
-          {/* <div className="group relative m-auto max-w-5xl px-6">
-            <div className="absolute inset-0 z-10 flex scale-95 items-center justify-center opacity-0 duration-500 group-hover:scale-100 group-hover:opacity-100">
-              <Link
-                href="/"
-                className="block text-sm duration-150 hover:opacity-75"
-              >
-                <span> Meet Our Customers</span>
-
-                <ChevronRight className="ml-1 inline-block size-3" />
-              </Link>
-              
-            </div>
-          </div> */}
         </section>
       </main>
     </>

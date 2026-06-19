@@ -1,4 +1,5 @@
 "use client";
+import { Logo } from "@/components/shared/Header";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { SheetTitle } from "@/components/ui/sheet";
@@ -26,7 +27,7 @@ const DashboardMobileSidebar = ({
       {/* Logo / Brand */}
       <div className="flex h-16 items-center border-b px-6">
         <Link href={dashboardHome}>
-          <span className="text-xl font-bold text-primary">PH Healthcare</span>
+          <Logo />
         </Link>
       </div>
 

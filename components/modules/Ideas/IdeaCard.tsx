@@ -1,6 +1,7 @@
 "use client";
-
+import axios from "axios";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,7 +10,9 @@ import {
 } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/formatters";
 import { getVoteScore, truncatePreview } from "@/lib/ideaUtils";
+import { initiatePayment } from "@/service/purchase.service";
 import { PublicIdea } from "@/types/idea.types";
+import { useMutation } from "@tanstack/react-query";
 import { ArrowBigDown, ArrowBigUp, Lock, MessageSquare } from "lucide-react";
 import Link from "next/link";
 
@@ -19,6 +22,33 @@ interface IdeaCardProps {
 
 const IdeaCard = ({ idea }: IdeaCardProps) => {
   const score = getVoteScore(idea.upvoteCount, idea.downvoteCount);
+
+  const createMutation = useMutation({
+    mutationFn: initiatePayment,
+
+    onSuccess: (data) => {
+      console.log(data);
+    },
+
+    onError: (error) => {
+      console.log(error.message);
+    },
+  });
+
+  const handleInitiatePayment = async (id: string) => {
+    const res = await axios.post(
+      "http://localhost:9000/api/purchases/initiate",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ideaId: id,
+        }),
+      },
+    );
+  };
 
   return (
     <Card className="group flex h-full flex-col transition-shadow hover:shadow-md">
@@ -66,6 +96,12 @@ const IdeaCard = ({ idea }: IdeaCardProps) => {
             {idea._count.comments}
           </span>
         </div>
+        <Button
+          onClick={() => handleInitiatePayment(idea.id)}
+          disabled={createMutation.isPending}
+        >
+          {createMutation.isPending ? "Processing..." : "Pay Now"}
+        </Button>
         <Link
           href={`/ideas/${idea.id}`}
           className="text-sm font-medium text-primary hover:underline"

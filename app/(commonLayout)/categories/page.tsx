@@ -5,7 +5,7 @@ const CategoriesPage = () => {
   return (
     <div className="flex min-h-screen w-full flex-col">
       <HeroHeader />
-      <main className="grow">
+      <main className="grow mt-20">
         <CategoriesContent />
       </main>
     </div>

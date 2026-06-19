@@ -1,5 +1,6 @@
 "use client";
 
+import { Logo } from "@/components/shared/Header";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { getIconComponent } from "@/lib/iconMapper";
@@ -26,9 +27,7 @@ const DashboardSidebarContent = ({
       {/* Logo / Brand */}
       <div className="flex h-16 items-center border-b px-6">
         <Link href={dashboardHome}>
-          <span className="text-xl font-bold text-primary">
-            Online Healthcare
-          </span>
+          <Logo />
         </Link>
       </div>
 

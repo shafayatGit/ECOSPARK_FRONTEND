@@ -6,11 +6,9 @@ export default function CommonLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body>
-        <HeroHeader />
-        {children}
-      </body>
-    </html>
+    <body>
+      <HeroHeader />
+      {children}
+    </body>
   );
 }

@@ -18,7 +18,7 @@ const dmSansHeading = DM_Sans({
   variable: "--font-heading",
 });
 
-const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
+const dmSans = DM_Sans({subsets:['latin'],variable:'--font-sans'});
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
@@ -38,7 +38,7 @@ export default function RootLayout({
         "antialiased",
         fontMono.variable,
         "font-sans",
-        figtree.variable,
+        dmSans.variable,
         dmSansHeading.variable,
       )}
     >

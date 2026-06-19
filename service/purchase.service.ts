@@ -3,7 +3,11 @@
 
 import { httpClient } from "@/lib/axios/httpClient";
 import { ApiResponse, PaginationMeta } from "@/types/api.types";
-import { IAdminDashboardData } from "@/types/dashboard.types";
+import {
+  IAdminDashboardData,
+  IPurchaseIdea,
+  isPaidOrNot,
+} from "@/types/dashboard.types";
 import { Purchase } from "@/types/purchase.types";
 import {
   IPurchaseListQuery,
@@ -44,9 +48,8 @@ export async function getPurchaseOverview(): Promise<
   ApiResponse<IAdminDashboardData["overview"]["purchases"] | null>
 > {
   try {
-    const response = await httpClient.get<IAdminDashboardData>(
-      "/api/admin/stats",
-    );
+    const response =
+      await httpClient.get<IAdminDashboardData>("/api/admin/stats");
 
     if (!response.success || !response.data) {
       return {
@@ -68,4 +71,13 @@ export async function getPurchaseOverview(): Promise<
       data: null,
     };
   }
+}
+
+export async function initiatePayment(payload: IPurchaseIdea) {
+  const res = await httpClient.post<IPurchaseIdea>(
+    "/api/purchases/initiate",
+    payload,
+  );
+
+  return res.data;
 }
