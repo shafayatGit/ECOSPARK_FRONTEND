@@ -1,7 +1,6 @@
 "use client";
-import React from "react";
 import Link from "next/link";
-import { ArrowRight, ChevronRight, Menu, X } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AnimatedGroup } from "./animated-group";
 import { TargetAndTransition } from "framer-motion";
