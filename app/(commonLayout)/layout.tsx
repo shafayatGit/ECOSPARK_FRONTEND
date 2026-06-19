@@ -1,3 +1,4 @@
+import Footer from "@/components/shared/Footer";
 import { HeroHeader } from "@/components/shared/Header";
 
 export default function CommonLayout({
@@ -9,6 +10,7 @@ export default function CommonLayout({
     <body>
       <HeroHeader />
       {children}
+      <Footer />
     </body>
   );
 }

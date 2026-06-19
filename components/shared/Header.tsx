@@ -8,7 +8,7 @@ import { Button } from "../ui/button";
 const menuItems = [
   { name: "Ideas", href: "/ideas" },
   { name: "Categories", href: "/categories" },
-  { name: "About", href: "#link" },
+  { name: "About", href: "/about" },
 ];
 
 export const HeroHeader = () => {

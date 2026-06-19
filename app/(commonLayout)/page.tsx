@@ -13,7 +13,6 @@ const CommonLayoutPage = () => {
         <HowItWorks />
         <Testimonial />
         <NewsLetter />
-        <Footer />
       </main>
     </div>
   );
