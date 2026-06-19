@@ -36,3 +36,20 @@ export async function getMyPurchases(
     };
   }
 }
+
+export async function initiatePurchase(ideaId: string) {
+  try {
+    return await httpClient.post<{
+      checkoutUrl: string;
+      message: string;
+    }>("/api/purchases/initiate", {
+      ideaId,
+    });
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "Failed to initiate purchase.",
+      data: null,
+    };
+  }
+}

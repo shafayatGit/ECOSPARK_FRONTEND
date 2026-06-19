@@ -6,9 +6,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
 
 const menuItems = [
-  { name: "Features", href: "#link" },
-  { name: "Solution", href: "#link" },
-  { name: "Pricing", href: "#link" },
+  { name: "Ideas", href: "/ideas" },
+  { name: "Categories", href: "/categories" },
   { name: "About", href: "#link" },
 ];
 
@@ -94,7 +93,7 @@ export const HeroHeader = () => {
                   size="sm"
                   className={cn(isScrolled && "lg:hidden")}
                 >
-                  <Link href="#">
+                  <Link href="/login">
                     <span>Login</span>
                   </Link>
                 </Button>
@@ -103,7 +102,7 @@ export const HeroHeader = () => {
                   size="sm"
                   className={cn(isScrolled && "lg:hidden")}
                 >
-                  <Link href="#">
+                  <Link href="/register">
                     <span>Sign Up</span>
                   </Link>
                 </Button>
@@ -112,7 +111,7 @@ export const HeroHeader = () => {
                   size="sm"
                   className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
                 >
-                  <Link href="#">
+                  <Link href="/ideas">
                     <span>Get Started</span>
                   </Link>
                 </Button>

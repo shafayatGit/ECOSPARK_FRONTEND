@@ -5,6 +5,7 @@ import { ArrowRight, ChevronRight, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AnimatedGroup } from "./animated-group";
 import { TargetAndTransition } from "framer-motion";
+import TrustedBrands from "./trustedBrands";
 
 type AnimationVariant = {
   hidden?: TargetAndTransition;
@@ -198,14 +199,7 @@ export function HeroSection() {
                 <div className="inset-shadow-2xs ring-background dark:inset-shadow-white/20 bg-background relative mx-auto max-w-6xl overflow-hidden rounded-2xl border p-4 shadow-lg shadow-zinc-950/15 ring-1">
                   <img
                     className="bg-background aspect-15/8 relative hidden rounded-2xl dark:block"
-                    src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=2700&h=1440&fit=crop&auto=format"
-                    alt="app screen"
-                    width="2700"
-                    height="1440"
-                  />
-                  <img
-                    className="z-2 border-border/25 aspect-15/8 relative rounded-2xl border dark:hidden"
-                    src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=2700&h=1440&fit=crop&auto=format"
+                    src="/banner.png"
                     alt="app screen"
                     width="2700"
                     height="1440"
@@ -216,7 +210,8 @@ export function HeroSection() {
           </div>
         </section>
         <section className="bg-background pb-16 pt-16 md:pb-32">
-          <div className="group relative m-auto max-w-5xl px-6">
+          <TrustedBrands />
+          {/* <div className="group relative m-auto max-w-5xl px-6">
             <div className="absolute inset-0 z-10 flex scale-95 items-center justify-center opacity-0 duration-500 group-hover:scale-100 group-hover:opacity-100">
               <Link
                 href="/"
@@ -226,8 +221,9 @@ export function HeroSection() {
 
                 <ChevronRight className="ml-1 inline-block size-3" />
               </Link>
+              
             </div>
-          </div>
+          </div> */}
         </section>
       </main>
     </>
