@@ -129,7 +129,7 @@ const IdeaDetailContent = ({
   const comments = commentsResponse?.data ?? [];
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 px-6 py-10">
+    <div className=" mt-10 mx-auto max-w-4xl space-y-8 px-6 py-10">
       <Button variant="ghost" size="sm" className="-ml-2 w-fit" asChild>
         <Link href="/ideas">
           <ArrowLeft data-icon="inline-start" />
@@ -177,10 +177,10 @@ const IdeaDetailContent = ({
                 )}
               </time>
               <span>·</span>
-              <span className="inline-flex items-center gap-1">
+              {/* <span className="inline-flex items-center gap-1">
                 <MessageSquare className="size-4" />
                 {idea._count.comments} comments
-              </span>
+              </span> */}
             </div>
           </header>
 
@@ -217,8 +217,8 @@ const IdeaDetailContent = ({
                   <div className="space-y-1">
                     <p className="font-medium">Premium content locked</p>
                     <p className="max-w-sm text-sm text-muted-foreground">
-                      Purchase this idea to unlock the full solution, description,
-                      and supporting details.
+                      Purchase this idea to unlock the full solution,
+                      description, and supporting details.
                     </p>
                   </div>
                   <Button
@@ -226,7 +226,10 @@ const IdeaDetailContent = ({
                     disabled={purchaseMutation.isPending}
                   >
                     {purchaseMutation.isPending ? (
-                      <Loader2 className="animate-spin" data-icon="inline-start" />
+                      <Loader2
+                        className="animate-spin"
+                        data-icon="inline-start"
+                      />
                     ) : (
                       <Lock data-icon="inline-start" />
                     )}

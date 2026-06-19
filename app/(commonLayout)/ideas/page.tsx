@@ -5,8 +5,7 @@ import { Suspense } from "react";
 
 const IdeasPage = () => {
   return (
-    <div className="flex min-h-screen w-full flex-col">
-      <HeroHeader />
+    <div className="flex min-h-screen  w-full flex-col">
       <main className="grow">
         <Suspense
           fallback={

@@ -1,16 +1,16 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { formatCurrency } from "@/lib/formatters";
 import { getVoteScore, truncatePreview } from "@/lib/ideaUtils";
 import { PublicIdea } from "@/types/idea.types";
-import {
-  ArrowBigDown,
-  ArrowBigUp,
-  Lock,
-  MessageSquare,
-} from "lucide-react";
+import { ArrowBigDown, ArrowBigUp, Lock, MessageSquare } from "lucide-react";
 import Link from "next/link";
 
 interface IdeaCardProps {

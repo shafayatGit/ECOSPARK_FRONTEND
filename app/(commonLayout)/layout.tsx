@@ -1,3 +1,5 @@
+import { HeroHeader } from "@/components/shared/Header";
+
 export default function CommonLayout({
   children,
 }: Readonly<{
@@ -5,7 +7,10 @@ export default function CommonLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        <HeroHeader />
+        {children}
+      </body>
     </html>
   );
 }

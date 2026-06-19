@@ -106,7 +106,8 @@ export function HeroSection() {
                     className="hover:bg-background dark:hover:border-t-border bg-muted group mx-auto flex w-fit items-center gap-4 rounded-full border p-1 pl-4 shadow-md shadow-black/5 transition-all duration-300 dark:border-t-white/5 dark:shadow-zinc-950"
                   >
                     <span className="text-foreground text-sm">
-                      Introducing Support for AI Models
+                      Introducing EcoSpark Hub: Your Launchpad for Sustainable
+                      Innovation
                     </span>
                     <span className="dark:border-background block h-4 w-0.5 border-l bg-white dark:bg-zinc-700"></span>
 
@@ -123,11 +124,14 @@ export function HeroSection() {
                   </Link>
 
                   <h1 className="mt-8 max-w-4xl mx-auto text-balance text-6xl md:text-7xl lg:mt-16 xl:text-[5.25rem]">
-                    Modern Solutions for Customer Engagement
+                    Turn Your Sustainable Ideas Into Real Impact
                   </h1>
                   <p className="mx-auto mt-8 max-w-2xl text-balance text-lg">
-                    Highly customizable components for building modern websites
-                    and applications that look and feel the way you mean it.
+                    EcoSpark Hub is where changemakers share, refine, and fund
+                    the next wave of sustainability projects — from cutting
+                    plastic waste to powering communities with solar. Submit
+                    your idea, get expert feedback, and watch it grow with
+                    support from a community that cares.
                   </p>
                 </AnimatedGroup>
 
@@ -156,8 +160,8 @@ export function HeroSection() {
                       size="lg"
                       className="rounded-xl px-5 text-base"
                     >
-                      <Link href="#link">
-                        <span className="text-nowrap">Start Building</span>
+                      <Link href="/ideas">
+                        <span className="text-nowrap">Explore Ideas</span>
                       </Link>
                     </Button>
                   </div>
@@ -168,8 +172,8 @@ export function HeroSection() {
                     variant="ghost"
                     className="h-10.5 rounded-xl px-5"
                   >
-                    <Link href="#link">
-                      <span className="text-nowrap">Request a demo</span>
+                    <Link href="/register">
+                      <span className="text-nowrap">Share Your Idea</span>
                     </Link>
                   </Button>
                 </AnimatedGroup>

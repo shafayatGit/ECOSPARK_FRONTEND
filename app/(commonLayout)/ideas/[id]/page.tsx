@@ -14,7 +14,6 @@ const IdeaDetailPage = async ({ params }: IdeaDetailPageProps) => {
 
   return (
     <div className="flex min-h-screen w-full flex-col">
-      <HeroHeader />
       <main className="grow">
         <Suspense
           fallback={

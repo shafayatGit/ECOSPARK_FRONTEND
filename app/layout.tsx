@@ -1,13 +1,24 @@
-import { Geist, Geist_Mono, Source_Sans_3, DM_Sans, Figtree } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Source_Sans_3,
+  DM_Sans,
+  Figtree,
+} from "next/font/google";
 
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import QueryProviders from "@/providers/QueryProvider";
+import { Header } from "@/components/ui/header-3";
+import { HeroHeader } from "@/components/shared/Header";
 
-const dmSansHeading = DM_Sans({subsets:['latin'],variable:'--font-heading'});
+const dmSansHeading = DM_Sans({
+  subsets: ["latin"],
+  variable: "--font-heading",
+});
 
-const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
+const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
