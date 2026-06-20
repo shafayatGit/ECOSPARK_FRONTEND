@@ -1,9 +1,11 @@
 "use client";
 import React from "react";
-import { Menu, X } from "lucide-react";
+import { LogOut, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
+import { ILoginResponse } from "@/types/auth.types";
+import { logoutUser } from "@/service/auth.service";
 
 const menuItems = [
   { name: "Ideas", href: "/ideas" },
@@ -11,7 +13,7 @@ const menuItems = [
   { name: "About", href: "/about" },
 ];
 
-export const HeroHeader = () => {
+export const HeroHeader = ({ userInfo }: ILoginResponse) => {
   const [menuState, setMenuState] = React.useState(false);
   const [isScrolled, setIsScrolled] = React.useState(false);
 
@@ -86,36 +88,47 @@ export const HeroHeader = () => {
                   ))}
                 </ul>
               </div>
-              <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                <Button
-                  asChild
-                  variant="outline"
-                  size="sm"
-                  className={cn(isScrolled && "lg:hidden")}
-                >
-                  <Link href="/login">
-                    <span>Login</span>
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  className={cn(isScrolled && "lg:hidden")}
-                >
-                  <Link href="/register">
-                    <span>Sign Up</span>
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  size="sm"
-                  className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
-                >
-                  <Link href="/ideas">
-                    <span>Get Started</span>
-                  </Link>
-                </Button>
-              </div>
+              {userInfo ? (
+                <>
+                  <form action={logoutUser} className="mt-3">
+                    <Button className="w-full" variant="outline">
+                      <LogOut className="size-4" />
+                      Logout
+                    </Button>
+                  </form>
+                </>
+              ) : (
+                <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className={cn(isScrolled && "lg:hidden")}
+                  >
+                    <Link href="/login">
+                      <span>Login</span>
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    size="sm"
+                    className={cn(isScrolled && "lg:hidden")}
+                  >
+                    <Link href="/register">
+                      <span>Sign Up</span>
+                    </Link>
+                  </Button>
+                  <Button
+                    asChild
+                    size="sm"
+                    className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
+                  >
+                    <Link href="/ideas">
+                      <span>Get Started</span>
+                    </Link>
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         </div>

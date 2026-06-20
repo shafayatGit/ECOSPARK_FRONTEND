@@ -198,80 +198,33 @@ const IdeaDetailContent = ({
               Proposed Solution
             </h2>
 
-            {hasFullAccess && idea.proposedSolution ? (
-              <p className="leading-relaxed whitespace-pre-wrap text-muted-foreground">
-                {idea.proposedSolution}
-              </p>
-            ) : (
-              <div className="relative overflow-hidden rounded-xl border">
-                <div className="space-y-2 p-4 blur-sm select-none">
-                  <div className="h-4 w-full rounded bg-muted" />
-                  <div className="h-4 w-11/12 rounded bg-muted" />
-                  <div className="h-4 w-4/5 rounded bg-muted" />
-                  <div className="h-4 w-full rounded bg-muted" />
-                </div>
-                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-t from-background via-background/95 to-background/40 p-6 text-center">
-                  <div className="rounded-full bg-muted p-3">
-                    <Lock className="size-6 text-muted-foreground" />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="font-medium">Premium content locked</p>
-                    <p className="max-w-sm text-sm text-muted-foreground">
-                      Purchase this idea to unlock the full solution,
-                      description, and supporting details.
-                    </p>
-                  </div>
-                  <Button
-                    onClick={handlePurchase}
-                    disabled={purchaseMutation.isPending}
-                  >
-                    {purchaseMutation.isPending ? (
-                      <Loader2
-                        className="animate-spin"
-                        data-icon="inline-start"
-                      />
-                    ) : (
-                      <Lock data-icon="inline-start" />
-                    )}
-                    Unlock for{" "}
-                    {idea.price ? formatCurrency(idea.price) : "purchase"}
-                  </Button>
-                  {!isAuthenticated && (
-                    <p className="text-xs text-muted-foreground">
-                      You&apos;ll be asked to sign in before checkout.
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
+            <p className="leading-relaxed whitespace-pre-wrap text-muted-foreground">
+              {idea.proposedSolution}
+            </p>
           </section>
 
-          {hasFullAccess && idea.description && (
-            <section className="space-y-3">
-              <h2 className="font-heading text-xl font-semibold">
-                Extended Description
-              </h2>
-              <p className="leading-relaxed whitespace-pre-wrap text-muted-foreground">
-                {idea.description}
-              </p>
-            </section>
-          )}
+          <section className="space-y-3">
+            <h2 className="font-heading text-xl font-semibold">
+              Extended Description
+            </h2>
+            <p className="leading-relaxed whitespace-pre-wrap text-muted-foreground">
+              {idea.description}
+            </p>
+          </section>
 
-          {hasFullAccess && idea.imageUrls.length > 0 && (
-            <section className="space-y-3">
-              <h2 className="font-heading text-xl font-semibold">Images</h2>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {idea.imageUrls.map((url, index) => (
-                  <img
-                    key={url}
-                    src={url}
-                    alt={`${idea.title} image ${index + 1}`}
-                    className="aspect-video w-full rounded-xl border object-cover"
-                  />
-                ))}
-              </div>
-            </section>
-          )}
+          <section className="space-y-3">
+            <h2 className="font-heading text-xl font-semibold">Images</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {idea.imageUrls.map((url, index) => (
+                <img
+                  key={url}
+                  src={url}
+                  alt={`${idea.title} image ${index + 1}`}
+                  className="aspect-video w-full rounded-xl border object-cover"
+                />
+              ))}
+            </div>
+          </section>
 
           {idea.isPaid && hasFullAccess && (
             <Alert>

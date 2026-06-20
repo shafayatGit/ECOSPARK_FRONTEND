@@ -74,7 +74,7 @@ export async function getPurchaseOverview(): Promise<
 }
 
 export async function initiatePayment(payload: IPurchaseIdea) {
-  const res = await httpClient.post<IPurchaseIdea>(
+  const res = await httpClient.post<isPaidOrNot>(
     "/api/purchases/initiate",
     payload,
   );

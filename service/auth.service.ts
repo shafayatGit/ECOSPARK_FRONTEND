@@ -9,6 +9,7 @@ import {
   changePasswordSchema,
   updateProfileSchema,
 } from "@/zod/auth.validation";
+import { redirect } from "next/navigation";
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -194,32 +195,26 @@ export async function changePassword(payload: IChangePasswordPayload) {
 }
 
 export async function logoutUser() {
-  try {
-    const res = await fetch(`${BASE_API_URL}/auth/logout`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: await getAuthCookieHeader(),
-      },
-    });
+  const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("better-auth.session_token")?.value;
 
-    if (!res.ok) {
-      return {
-        success: false,
-        message: "Failed to log out.",
-      };
+  if (sessionToken) {
+    try {
+      await fetch(`${BASE_API_URL}/auth/logout`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `better-auth.session_token=${sessionToken}`,
+        },
+      });
+    } catch (error) {
+      console.error("Logout request failed:", error);
     }
-
-    return {
-      success: true,
-      message: "Logged out successfully.",
-    };
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error ? error.message : "Failed to log out.";
-    return {
-      success: false,
-      message,
-    };
   }
+
+  cookieStore.delete("better-auth.session_token");
+  cookieStore.delete("accessToken");
+  cookieStore.delete("refreshToken");
+
+  redirect("/login");
 }

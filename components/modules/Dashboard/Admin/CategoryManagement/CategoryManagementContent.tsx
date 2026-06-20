@@ -89,7 +89,12 @@ const CategoryManagementContent = () => {
     ...(debouncedSearch ? { searchTerm: debouncedSearch } : {}),
   };
 
-  const { data: response, isLoading, isFetching, refetch } = useQuery({
+  const {
+    data: response,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
     queryKey: ["categories", queryParams],
     queryFn: () => getCategories(queryParams),
   });
@@ -174,7 +179,10 @@ const CategoryManagementContent = () => {
             onClick={() => refetch()}
             disabled={isFetching}
           >
-            <RefreshCw className={isFetching ? "animate-spin" : ""} data-icon="inline-start" />
+            <RefreshCw
+              className={isFetching ? "animate-spin" : ""}
+              data-icon="inline-start"
+            />
             Refresh
           </Button>
           <Dialog open={createOpen} onOpenChange={setCreateOpen}>
@@ -220,7 +228,11 @@ const CategoryManagementContent = () => {
                   }}
                 >
                   {(field) => (
-                    <AppField field={field} label="Name" placeholder="Renewable Energy" />
+                    <AppField
+                      field={field}
+                      label="Name"
+                      placeholder="Renewable Energy"
+                    />
                   )}
                 </form.Field>
 
@@ -245,7 +257,9 @@ const CategoryManagementContent = () => {
                 <form.Field name="description">
                   {(field) => (
                     <div className="space-y-1.5">
-                      <Label htmlFor="description">Description (optional)</Label>
+                      <Label htmlFor="description">
+                        Description (optional)
+                      </Label>
                       <Textarea
                         id="description"
                         value={field.state.value}
@@ -319,10 +333,16 @@ const CategoryManagementContent = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
-                      <TableHead className="hidden sm:table-cell">Slug</TableHead>
-                      <TableHead className="hidden md:table-cell">Description</TableHead>
+                      <TableHead className="hidden sm:table-cell">
+                        Slug
+                      </TableHead>
+                      <TableHead className="hidden md:table-cell">
+                        Description
+                      </TableHead>
                       <TableHead className="text-center">Ideas</TableHead>
-                      <TableHead className="hidden lg:table-cell">Created</TableHead>
+                      <TableHead className="hidden lg:table-cell">
+                        Created
+                      </TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -351,7 +371,6 @@ const CategoryManagementContent = () => {
                           <Button
                             size="sm"
                             variant="destructive"
-                            disabled={(category._count?.ideas ?? 0) > 0}
                             onClick={() => setDeleteTarget(category)}
                           >
                             <Trash2 data-icon="inline-start" />

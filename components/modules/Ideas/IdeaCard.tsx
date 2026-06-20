@@ -15,39 +15,32 @@ import { PublicIdea } from "@/types/idea.types";
 import { useMutation } from "@tanstack/react-query";
 import { ArrowBigDown, ArrowBigUp, Lock, MessageSquare } from "lucide-react";
 import Link from "next/link";
+import { redirect, useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useState } from "react";
 
 interface IdeaCardProps {
   idea: PublicIdea;
 }
 
-const IdeaCard = ({ idea }: IdeaCardProps) => {
+const IdeaCard = ({ idea, user }: IdeaCardProps) => {
+  const router = useRouter();
+  const [paymentData, setPaymentData] = useState();
   const score = getVoteScore(idea.upvoteCount, idea.downvoteCount);
 
-  const createMutation = useMutation({
-    mutationFn: initiatePayment,
+  const mutation = useMutation({
+    mutationFn: (id: string) => initiatePayment({ ideaId: id }),
 
     onSuccess: (data) => {
-      console.log(data);
+      router.push(data.checkoutUrl);
     },
-
-    onError: (error) => {
-      console.log(error.message);
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to post comment");
     },
   });
 
-  const handleInitiatePayment = async (id: string) => {
-    const res = await axios.post(
-      "http://localhost:9000/api/purchases/initiate",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ideaId: id,
-        }),
-      },
-    );
+  const handlePurchase = (id: string) => {
+    mutation.mutate(id);
   };
 
   return (
@@ -96,18 +89,25 @@ const IdeaCard = ({ idea }: IdeaCardProps) => {
             {idea._count.comments}
           </span>
         </div>
-        <Button
-          onClick={() => handleInitiatePayment(idea.id)}
-          disabled={createMutation.isPending}
-        >
-          {createMutation.isPending ? "Processing..." : "Pay Now"}
-        </Button>
-        <Link
-          href={`/ideas/${idea.id}`}
-          className="text-sm font-medium text-primary hover:underline"
-        >
-          Read more
-        </Link>
+        <div className="flex items-center gap-3">
+          {user && (
+            <>
+              <Button
+                onClick={() => handlePurchase(idea.id)}
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending ? "Processing..." : "Pay Now"}
+              </Button>
+            </>
+          )}
+
+          <Link
+            href={`/ideas/${idea.id}`}
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Read more
+          </Link>
+        </div>
       </CardFooter>
     </Card>
   );

@@ -49,7 +49,6 @@ interface IdeasListContentProps {
 const IdeasListContent = ({ initialCategory, user }: IdeasListContentProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
-  console.log(user);
 
   const categoryParam =
     searchParams.get("category") ||
