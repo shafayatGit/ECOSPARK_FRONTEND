@@ -29,6 +29,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import IdeaCard from "./IdeaCard";
+import { ILoginResponse } from "@/types/auth.types";
+import { UserInfo } from "@/types/user.types";
 
 const SORT_OPTIONS = [
   { value: "recent", label: "Most recent" },
@@ -44,6 +46,7 @@ const PAID_OPTIONS = [
 
 interface IdeasListContentProps {
   initialCategory?: string;
+  user: UserInfo;
 }
 
 const IdeasListContent = ({ initialCategory, user }: IdeasListContentProps) => {

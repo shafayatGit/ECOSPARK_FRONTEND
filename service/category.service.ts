@@ -17,7 +17,7 @@ type ListResponse<T> = ApiResponse<T[]> & { meta?: PaginationMeta };
 
 export async function getCategories(
   query: ICategoryListQuery = {},
-): Promise<ListResponse<Category | null>> {
+): Promise<ListResponse<Category>> {
   try {
     const parsed = categoryListQuerySchema.safeParse(query);
 
@@ -25,7 +25,6 @@ export async function getCategories(
       return {
         success: false,
         message: parsed.error.issues[0]?.message || "Invalid query parameters.",
-        data: null,
       };
     }
 
@@ -36,7 +35,6 @@ export async function getCategories(
     return {
       success: false,
       message: error.message || "Failed to fetch categories.",
-      data: null,
     };
   }
 }
@@ -49,7 +47,6 @@ export async function createCategory(payload: ICreateCategoryPayload) {
       return {
         success: false,
         message: parsed.error.issues[0]?.message || "Invalid category data.",
-        data: null,
       };
     }
 
@@ -58,7 +55,6 @@ export async function createCategory(payload: ICreateCategoryPayload) {
     return {
       success: false,
       message: error.message || "Failed to create category.",
-      data: null,
     };
   }
 }
@@ -72,7 +68,6 @@ export async function deleteCategory(categoryId: string) {
     return {
       success: false,
       message: error.message || "Failed to delete category.",
-      data: null,
     };
   }
 }

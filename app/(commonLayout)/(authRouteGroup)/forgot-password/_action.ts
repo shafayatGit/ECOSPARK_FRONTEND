@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
-
 import { httpClient } from "@/lib/axios/httpClient";
 import { ApiErrorResponse } from "@/types/api.types";
-import { forgotPasswordZodSchema, IForgotPasswordPayload } from "@/zod/auth.validation";
+import {
+  forgotPasswordZodSchema,
+  IForgotPasswordPayload,
+} from "@/zod/auth.validation";
 
 export type IForgotPasswordActionSuccess = {
   success: true;
@@ -11,7 +13,9 @@ export type IForgotPasswordActionSuccess = {
   redirectPath: string;
 };
 
-export type IForgotPasswordActionResult = IForgotPasswordActionSuccess | ApiErrorResponse;
+export type IForgotPasswordActionResult =
+  | IForgotPasswordActionSuccess
+  | ApiErrorResponse;
 
 export const forgotPasswordAction = async (
   payload: IForgotPasswordPayload,

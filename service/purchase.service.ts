@@ -18,7 +18,7 @@ type ListResponse<T> = ApiResponse<T[]> & { meta?: PaginationMeta };
 
 export async function getPurchases(
   query: IPurchaseListQuery = {},
-): Promise<ListResponse<Purchase | null>> {
+): Promise<ListResponse<Purchase>> {
   try {
     const parsed = purchaseListQuerySchema.safeParse(query);
 
@@ -26,7 +26,6 @@ export async function getPurchases(
       return {
         success: false,
         message: parsed.error.issues[0]?.message || "Invalid query parameters.",
-        data: null,
       };
     }
 
@@ -39,7 +38,6 @@ export async function getPurchases(
     return {
       success: false,
       message: error.message || "Failed to fetch purchases.",
-      data: null,
     };
   }
 }
@@ -55,7 +53,6 @@ export async function getPurchaseOverview(): Promise<
       return {
         success: false,
         message: response.message || "Failed to fetch purchase overview.",
-        data: null,
       };
     }
 
@@ -68,7 +65,6 @@ export async function getPurchaseOverview(): Promise<
     return {
       success: false,
       message: error.message || "Failed to fetch purchase overview.",
-      data: null,
     };
   }
 }

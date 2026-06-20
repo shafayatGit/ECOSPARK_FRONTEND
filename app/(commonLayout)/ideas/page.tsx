@@ -1,4 +1,3 @@
-import { HeroHeader } from "@/components/shared/Header";
 import IdeasListContent from "@/components/modules/Ideas/IdeasListContent";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";

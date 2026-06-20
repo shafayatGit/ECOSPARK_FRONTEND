@@ -14,7 +14,7 @@ type ListResponse<T> = ApiResponse<T[]> & { meta?: PaginationMeta };
 
 export async function getAdminIdeas(
   query: IAdminIdeaListQuery = {},
-): Promise<ListResponse<AdminIdea | null>> {
+): Promise<ListResponse<AdminIdea>> {
   try {
     const parsed = adminIdeaListQuerySchema.safeParse(query);
 
@@ -22,7 +22,6 @@ export async function getAdminIdeas(
       return {
         success: false,
         message: parsed.error.issues[0]?.message || "Invalid query parameters.",
-        data: null,
       };
     }
 
@@ -35,7 +34,6 @@ export async function getAdminIdeas(
     return {
       success: false,
       message: error.message || "Failed to fetch ideas.",
-      data: null,
     };
   }
 }
@@ -77,7 +75,8 @@ export async function rejectIdea(ideaId: string, payload: IRejectIdeaPayload) {
     if (!parsed.success) {
       return {
         success: false,
-        message: parsed.error.issues[0]?.message || "Invalid rejection feedback.",
+        message:
+          parsed.error.issues[0]?.message || "Invalid rejection feedback.",
         data: null,
       };
     }

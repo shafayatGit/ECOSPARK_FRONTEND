@@ -1,3 +1,9 @@
+type Testimonial = {
+  text: string;
+  name: string;
+  role: string;
+  image: string;
+};
 export const Testimonial = () => {
   const testimonials = [
     {
@@ -49,7 +55,7 @@ export const Testimonial = () => {
     { start: 3, end: 6, className: "animate-scroll-reverse" },
   ];
 
-  const renderCard = (testimonial, index): any => (
+  const renderCard = (testimonial: Testimonial, index: number): any => (
     <div
       key={index}
       className="bg-[#19201F] text-white rounded-xl p-4 shrink-0 w-[350px]"

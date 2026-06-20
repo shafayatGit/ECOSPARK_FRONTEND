@@ -1,5 +1,5 @@
-import { Badge } from "@/src/components/ui/badge";
-import { UserStatus } from "@/src/types/doctor.types";
+import { Badge } from "@/components/ui/badge";
+import { UserStatus } from "@/types/user.types";
 
 interface IStatusBadgeCellProps {
   status: UserStatus;
@@ -9,9 +9,9 @@ const StatusBadgeCell = ({ status }: IStatusBadgeCellProps) => {
   return (
     <Badge
       variant={
-        status === UserStatus.ACTIVE
+        status === "ACTIVE"
           ? "default"
-          : status === UserStatus.BLOCKED
+          : status === "INACTIVE"
             ? "destructive"
             : "secondary"
       }

@@ -41,7 +41,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { formatCurrency, formatStatusLabel, truncateText } from "@/lib/formatters";
+import {
+  formatCurrency,
+  formatStatusLabel,
+  truncateText,
+} from "@/lib/formatters";
 import {
   approveIdea,
   getAdminIdeas,
@@ -51,7 +55,14 @@ import { IdeaStatus } from "@/types/dashboard.types";
 import { AdminIdea } from "@/types/idea.types";
 import { IAdminIdeaListQuery } from "@/zod/listQuery.validation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertCircle, Check, Eye, Lightbulb, MoreHorizontal, RefreshCw } from "lucide-react";
+import {
+  AlertCircle,
+  Check,
+  Eye,
+  Lightbulb,
+  MoreHorizontal,
+  RefreshCw,
+} from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 const STATUS_OPTIONS: { value: string; label: string }[] = [
@@ -118,7 +129,12 @@ const IdeaManagementContent = () => {
     ...(isPaid !== "all" ? { isPaid: isPaid as "true" | "false" } : {}),
   };
 
-  const { data: response, isLoading, isFetching, refetch } = useQuery({
+  const {
+    data: response,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
     queryKey: ["admin-ideas", queryParams],
     queryFn: () => getAdminIdeas(queryParams),
   });
@@ -159,7 +175,9 @@ const IdeaManagementContent = () => {
     invalidate();
   };
 
-  const ideas = response?.success ? (response.data ?? []) : [];
+  const ideas = response?.success
+    ? (response.data ?? []).filter((idea): idea is AdminIdea => idea !== null)
+    : [];
   const meta = response?.meta;
 
   const handleStatusChange = async (
@@ -277,7 +295,10 @@ const IdeaManagementContent = () => {
           disabled={isFetching}
           className="w-fit"
         >
-          <RefreshCw className={isFetching ? "animate-spin" : ""} data-icon="inline-start" />
+          <RefreshCw
+            className={isFetching ? "animate-spin" : ""}
+            data-icon="inline-start"
+          />
           Refresh
         </Button>
       </div>
@@ -359,25 +380,34 @@ const IdeaManagementContent = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Idea</TableHead>
-                      <TableHead className="hidden md:table-cell">Author</TableHead>
-                      <TableHead className="hidden sm:table-cell">Category</TableHead>
+                      <TableHead className="hidden md:table-cell">
+                        Author
+                      </TableHead>
+                      <TableHead className="hidden sm:table-cell">
+                        Category
+                      </TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead className="hidden lg:table-cell">Submitted</TableHead>
+                      <TableHead className="hidden lg:table-cell">
+                        Submitted
+                      </TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {ideas.map((idea) => (
-                      <TableRow key={idea.id}>
+                      <TableRow key={idea?.id}>
                         <TableCell className="max-w-[200px]">
                           <div className="truncate font-medium">
-                            {truncateText(idea.title, 40)}
+                            {truncateText(idea?.title ?? "", 40)}
                           </div>
                           <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                            {idea.isPaid ? (
-                              <Badge variant="secondary" className="text-[10px]">
-                                {idea.price
-                                  ? formatCurrency(idea.price)
+                            {idea?.isPaid ? (
+                              <Badge
+                                variant="secondary"
+                                className="text-[10px]"
+                              >
+                                {idea?.price
+                                  ? formatCurrency(idea?.price)
                                   : "Paid"}
                               </Badge>
                             ) : (
@@ -386,24 +416,32 @@ const IdeaManagementContent = () => {
                               </Badge>
                             )}
                             <span className="text-xs text-muted-foreground md:hidden">
-                              {idea.author.name}
+                              {idea?.author.name}
                             </span>
                           </div>
                         </TableCell>
                         <TableCell className="hidden max-w-[160px] md:table-cell">
-                          <div className="truncate">{idea.author.name}</div>
+                          <div className="truncate">{idea?.author?.name}</div>
                           <div className="truncate text-xs text-muted-foreground">
-                            {idea.author.email}
+                            {idea?.author.email}
                           </div>
                         </TableCell>
                         <TableCell className="hidden sm:table-cell">
-                          <Badge variant="outline">{idea.category.name}</Badge>
+                          <Badge variant="outline">
+                            {idea?.category?.name}
+                          </Badge>
                         </TableCell>
                         <TableCell>
-                          <StatusBadge status={idea.status} />
+                          <StatusBadge
+                            status={idea?.status ? idea?.status : ""}
+                          />
                         </TableCell>
                         <TableCell className="hidden lg:table-cell">
-                          <DateCell date={idea.createdAt} />
+                          <DateCell
+                            date={
+                              idea?.createdAt ? idea?.createdAt : new Date()
+                            }
+                          />
                         </TableCell>
                         <TableCell className="text-right">
                           {renderActions(idea)}

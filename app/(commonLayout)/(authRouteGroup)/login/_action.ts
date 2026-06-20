@@ -43,13 +43,14 @@ export const loginAction = async (
       parsedPayload.data,
     );
 
-    if (!response.success) {
+    if (!response?.success || !response.data) {
       return {
         success: false,
-        message: response.message || "Login failed",
+        message: response?.message || "Login failed",
       };
     }
 
+    // console.log(response.data.accessToken);
     const { accessToken, refreshToken, token, user } = response.data;
     const { role, needPasswordChange, email } = user.user;
 

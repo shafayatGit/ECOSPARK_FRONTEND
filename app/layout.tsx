@@ -10,20 +10,24 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { cn } from "@/lib/utils";
 import QueryProviders from "@/providers/QueryProvider";
-import { Header } from "@/components/ui/header-3";
-import { HeroHeader } from "@/components/shared/Header";
+import { Metadata } from "next";
 
 const dmSansHeading = DM_Sans({
   subsets: ["latin"],
   variable: "--font-heading",
 });
 
-const dmSans = DM_Sans({subsets:['latin'],variable:'--font-sans'});
+const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
 const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 });
+export const metadata: Metadata = {
+  title: "EcoSpark Hub",
+  description:
+    "A platform for hobbyists to connect, share, and discover new activities. Users can create profiles, join communities, and participate in events.",
+};
 
 export default function RootLayout({
   children,

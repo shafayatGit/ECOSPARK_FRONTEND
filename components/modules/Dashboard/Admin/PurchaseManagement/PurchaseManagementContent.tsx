@@ -80,10 +80,7 @@ const PurchaseManagementContent = () => {
       : {}),
   };
 
-  const {
-    data: overviewResponse,
-    isLoading: overviewLoading,
-  } = useQuery({
+  const { data: overviewResponse, isLoading: overviewLoading } = useQuery({
     queryKey: ["purchase-overview"],
     queryFn: getPurchaseOverview,
   });
@@ -110,7 +107,8 @@ const PurchaseManagementContent = () => {
             Purchase Management
           </h1>
           <p className="text-sm text-muted-foreground">
-            Monitor transactions, revenue, and payment statuses across the platform.
+            Monitor transactions, revenue, and payment statuses across the
+            platform.
           </p>
         </div>
         <Button
@@ -120,7 +118,10 @@ const PurchaseManagementContent = () => {
           disabled={isFetching}
           className="w-fit"
         >
-          <RefreshCw className={isFetching ? "animate-spin" : ""} data-icon="inline-start" />
+          <RefreshCw
+            className={isFetching ? "animate-spin" : ""}
+            data-icon="inline-start"
+          />
           Refresh
         </Button>
       </div>
@@ -216,45 +217,57 @@ const PurchaseManagementContent = () => {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Idea</TableHead>
-                      <TableHead className="hidden md:table-cell">Buyer</TableHead>
+                      <TableHead className="hidden md:table-cell">
+                        Buyer
+                      </TableHead>
                       <TableHead>Amount</TableHead>
                       <TableHead>Status</TableHead>
-                      <TableHead className="hidden lg:table-cell">Gateway</TableHead>
+                      <TableHead className="hidden lg:table-cell">
+                        Gateway
+                      </TableHead>
                       <TableHead className="text-right">Date</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {purchases.map((purchase) => (
-                      <TableRow key={purchase.id}>
+                      <TableRow key={purchase?.id}>
                         <TableCell className="max-w-[180px]">
                           <div className="truncate font-medium">
-                            {truncateText(purchase.idea.title, 35)}
+                            {truncateText(purchase?.idea.title ?? "", 35)}
                           </div>
                           <div className="mt-1 truncate text-xs text-muted-foreground md:hidden">
-                            {purchase.user?.name || "—"}
+                            {purchase?.user?.name || "—"}
                           </div>
                         </TableCell>
                         <TableCell className="hidden max-w-[160px] md:table-cell">
                           <div className="truncate">
-                            {purchase.user?.name || "—"}
+                            {purchase?.user?.name || "—"}
                           </div>
                           <div className="truncate text-xs text-muted-foreground">
-                            {purchase.user?.email || "—"}
+                            {purchase?.user?.email || "—"}
                           </div>
                         </TableCell>
                         <TableCell className="font-medium">
-                          {formatCurrency(purchase.amountPaid)}
+                          {formatCurrency(purchase?.amountPaid ?? 0)}
                         </TableCell>
                         <TableCell>
-                          <StatusBadge status={purchase.paymentStatus} />
+                          <StatusBadge
+                            status={
+                              purchase?.paymentStatus
+                                ? purchase?.paymentStatus
+                                : ""
+                            }
+                          />
                         </TableCell>
                         <TableCell className="hidden capitalize lg:table-cell">
-                          {purchase.gateway}
+                          {purchase?.gateway}
                         </TableCell>
                         <TableCell className="text-right">
                           <DateCell
                             date={
-                              purchase.completedAt || purchase.createdAt
+                              purchase?.completedAt ||
+                              purchase?.createdAt ||
+                              new Date()
                             }
                             formatString="MMM dd, yyyy HH:mm"
                           />

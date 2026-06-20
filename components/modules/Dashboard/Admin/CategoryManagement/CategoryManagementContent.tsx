@@ -348,24 +348,30 @@ const CategoryManagementContent = () => {
                   </TableHeader>
                   <TableBody>
                     {categories.map((category) => (
-                      <TableRow key={category.id}>
+                      <TableRow key={category?.id}>
                         <TableCell className="font-medium">
-                          {category.name}
+                          {category?.name}
                           <div className="text-xs text-muted-foreground sm:hidden">
-                            {category.slug}
+                            {category?.slug}
                           </div>
                         </TableCell>
                         <TableCell className="hidden sm:table-cell">
-                          {category.slug}
+                          {category?.slug}
                         </TableCell>
                         <TableCell className="hidden max-w-[200px] truncate md:table-cell">
-                          {category.description || "—"}
+                          {category?.description || "—"}
                         </TableCell>
                         <TableCell className="text-center">
-                          {category._count?.ideas ?? 0}
+                          {category?._count?.ideas ?? 0}
                         </TableCell>
                         <TableCell className="hidden lg:table-cell">
-                          <DateCell date={category.createdAt} />
+                          <DateCell
+                            date={
+                              category?.createdAt
+                                ? category.createdAt
+                                : new Date()
+                            }
+                          />
                         </TableCell>
                         <TableCell className="text-right">
                           <Button

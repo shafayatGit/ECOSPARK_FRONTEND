@@ -1,93 +1,81 @@
-"use client";
-import React from "react";
-import { LogOut, Menu, X } from "lucide-react";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { Button } from "../ui/button";
-import { ILoginResponse } from "@/types/auth.types";
-import { logoutUser } from "@/service/auth.service";
+import { ChefHat, LayoutDashboard, LogOut, Menu } from "lucide-react";
 
-const menuItems = [
-  { name: "Ideas", href: "/ideas" },
-  { name: "Categories", href: "/categories" },
-  { name: "About", href: "/about" },
+import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import PublicHeaderShell from "@/components/shared/Common/PublicHeaderShell";
+import PublicUserControls from "@/components/shared/Common/PublicUserControls";
+import { getDefaultDashboardRoute } from "@/lib/authUtils";
+import { getUserInfo, logoutUser } from "@/service/auth.service";
+
+const navLinks = [
+  { href: "/ideas", label: "Ideas" },
+  { href: "/categories", label: "Categories" },
+  { href: "/about", label: "About" },
 ];
 
-export const HeroHeader = ({ userInfo }: ILoginResponse) => {
-  const [menuState, setMenuState] = React.useState(false);
-  const [isScrolled, setIsScrolled] = React.useState(false);
-
-  React.useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+export default async function HeroHeader() {
+  const userInfo = await getUserInfo();
 
   return (
-    <header>
-      <nav
-        data-state={menuState && "active"}
-        className="fixed z-20 w-full px-2 group"
-      >
-        <div
-          className={cn(
-            "mx-auto mt-2 max-w-6xl px-6 transition-all duration-300 lg:px-12",
-            isScrolled &&
-              "bg-background/50 max-w-4xl rounded-2xl border backdrop-blur-lg lg:px-5",
-          )}
-        >
-          <div className="relative flex flex-wrap items-center justify-between gap-6 py-3 lg:gap-0 lg:py-4">
-            <div className="flex w-full justify-between lg:w-auto">
-              <Link
-                href="/"
-                aria-label="home"
-                className="flex items-center space-x-2"
-              >
+    <PublicHeaderShell>
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center gap-4">
+          <Link href="/" className="flex min-w-0 items-center gap-2">
+            <Logo />
+          </Link>
+        </div>
+
+        <nav className="hidden items-center gap-1 md:flex">
+          {navLinks.map((link) => (
+            <Button
+              key={link.href}
+              asChild
+              variant="ghost"
+              className="text-muted-foreground group-data-[scrolled=false]/site-header:hover:bg-white/10 group-data-[scrolled=false]/site-header:hover:text-white"
+            >
+              <Link href={link.href}>{link.label}</Link>
+            </Button>
+          ))}
+        </nav>
+
+        <PublicUserControls userInfo={userInfo} />
+
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              className="md:hidden group-data-[scrolled=false]/site-header:border-white/25 group-data-[scrolled=false]/site-header:bg-white/5 group-data-[scrolled=false]/site-header:text-white group-data-[scrolled=false]/site-header:hover:bg-white/10"
+              size="icon"
+              variant="outline"
+              aria-label="Open navigation"
+            >
+              <Menu className="size-4" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-80">
+            <SheetHeader>
+              <SheetTitle className="flex items-center gap-2">
                 <Logo />
-              </Link>
+              </SheetTitle>
+            </SheetHeader>
+            <div className="mt-6 grid gap-2 px-4">
+              {navLinks.map((link) => (
+                <Button
+                  key={link.href}
+                  asChild
+                  variant="ghost"
+                  className="justify-start"
+                >
+                  <Link href={link.href}>{link.label}</Link>
+                </Button>
+              ))}
 
-              <button
-                onClick={() => setMenuState(!menuState)}
-                aria-label={menuState == true ? "Close Menu" : "Open Menu"}
-                className="relative z-20 -m-2.5 -mr-4 block cursor-pointer p-2.5 lg:hidden"
-              >
-                <Menu className="in-data-[state=active]:rotate-180 group-data-[state=active]:scale-0 group-data-[state=active]:opacity-0 m-auto size-6 duration-200" />
-                <X className="group-data-[state=active]:rotate-0 group-data-[state=active]:scale-100 group-data-[state=active]:opacity-100 absolute inset-0 m-auto size-6 -rotate-180 scale-0 opacity-0 duration-200" />
-              </button>
-            </div>
-
-            <div className="absolute inset-0 m-auto hidden size-fit lg:block">
-              <ul className="flex gap-8 text-sm">
-                {menuItems.map((item, index) => (
-                  <li key={index}>
-                    <Link
-                      href={item.href}
-                      className="text-muted-foreground hover:text-accent-foreground block duration-150"
-                    >
-                      <span>{item.name}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="bg-background group-data-[state=active]:block lg:group-data-[state=active]:flex mb-6 hidden w-full flex-wrap items-center justify-end space-y-8 rounded-3xl border p-6 shadow-2xl shadow-zinc-300/20 md:flex-nowrap lg:m-0 lg:flex lg:w-fit lg:gap-6 lg:space-y-0 lg:border-transparent lg:bg-transparent lg:p-0 lg:shadow-none dark:shadow-none dark:lg:bg-transparent">
-              <div className="lg:hidden">
-                <ul className="space-y-6 text-base">
-                  {menuItems.map((item, index) => (
-                    <li key={index}>
-                      <Link
-                        href={item.href}
-                        className="text-muted-foreground hover:text-accent-foreground block duration-150"
-                      >
-                        <span>{item.name}</span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
               {userInfo ? (
                 <>
                   <form action={logoutUser} className="mt-3">
@@ -98,44 +86,22 @@ export const HeroHeader = ({ userInfo }: ILoginResponse) => {
                   </form>
                 </>
               ) : (
-                <div className="flex w-full flex-col space-y-3 sm:flex-row sm:gap-3 sm:space-y-0 md:w-fit">
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className={cn(isScrolled && "lg:hidden")}
-                  >
-                    <Link href="/login">
-                      <span>Login</span>
-                    </Link>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  <Button asChild variant="outline">
+                    <Link href="/login">Login</Link>
                   </Button>
-                  <Button
-                    asChild
-                    size="sm"
-                    className={cn(isScrolled && "lg:hidden")}
-                  >
-                    <Link href="/register">
-                      <span>Sign Up</span>
-                    </Link>
-                  </Button>
-                  <Button
-                    asChild
-                    size="sm"
-                    className={cn(isScrolled ? "lg:inline-flex" : "hidden")}
-                  >
-                    <Link href="/ideas">
-                      <span>Get Started</span>
-                    </Link>
+                  <Button asChild>
+                    <Link href="/register">Register</Link>
                   </Button>
                 </div>
               )}
             </div>
-          </div>
-        </div>
-      </nav>
-    </header>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </PublicHeaderShell>
   );
-};
+}
 
 export const Logo = ({ className }: { className?: string }) => {
   return (

@@ -18,9 +18,12 @@ import Link from "next/link";
 import { redirect, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useState } from "react";
+import { ILoginResponse } from "@/types/auth.types";
+import { UserInfo } from "@/types/user.types";
 
 interface IdeaCardProps {
   idea: PublicIdea;
+  user: UserInfo;
 }
 
 const IdeaCard = ({ idea, user }: IdeaCardProps) => {
@@ -32,6 +35,10 @@ const IdeaCard = ({ idea, user }: IdeaCardProps) => {
     mutationFn: (id: string) => initiatePayment({ ideaId: id }),
 
     onSuccess: (data) => {
+      if (!data?.checkoutUrl) {
+        return;
+      }
+
       router.push(data.checkoutUrl);
     },
     onError: (error: Error) => {

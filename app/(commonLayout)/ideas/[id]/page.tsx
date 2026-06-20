@@ -1,4 +1,3 @@
-import { HeroHeader } from "@/components/shared/Header";
 import IdeaDetailContent from "@/components/modules/Ideas/IdeaDetailContent";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getUserInfo } from "@/service/auth.service";

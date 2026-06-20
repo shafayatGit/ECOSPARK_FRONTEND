@@ -3,6 +3,7 @@ export interface ILoginResponse {
   accessToken: string;
   refreshToken: string;
   user: {
+    redirect: boolean;
     user: {
       needPasswordChange: boolean;
       email: string;

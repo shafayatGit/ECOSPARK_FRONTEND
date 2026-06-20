@@ -1,18 +1,21 @@
 import Footer from "@/components/shared/Footer";
-import { HeroHeader } from "@/components/shared/Header";
+import HeroHeader from "@/components/shared/Header";
 import { getUserInfo } from "@/service/auth.service";
+import { ILoginResponse } from "@/types/auth.types";
+
+export const dynamic = "force-dynamic";
 
 export default async function CommonLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const userInfo = await getUserInfo();
   return (
     <body>
-      <HeroHeader userInfo={userInfo} />
+      <HeroHeader />
       {children}
       <Footer />
     </body>
   );
 }
+
