@@ -68,7 +68,7 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
 
         <DropdownMenuItem
           onClick={() => {
-            logoutUser;
+            logoutUser();
           }}
           className="cursor-pointer text-red-600"
         >
