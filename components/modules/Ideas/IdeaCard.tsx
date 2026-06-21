@@ -97,7 +97,7 @@ const IdeaCard = ({ idea, user }: IdeaCardProps) => {
           </span>
         </div>
         <div className="flex items-center gap-3">
-          {user && (
+          {user ? (
             <>
               <Button
                 onClick={() => handlePurchase(idea.id)}
@@ -105,15 +105,23 @@ const IdeaCard = ({ idea, user }: IdeaCardProps) => {
               >
                 {mutation.isPending ? "Processing..." : "Pay Now"}
               </Button>
+              <Link
+                href={`/ideas/${idea.id}`}
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Read more
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href={`/register`}
+                className="text-sm font-medium text-primary hover:underline"
+              >
+                Login to see more
+              </Link>
             </>
           )}
-
-          <Link
-            href={`/ideas/${idea.id}`}
-            className="text-sm font-medium text-primary hover:underline"
-          >
-            Read more
-          </Link>
         </div>
       </CardFooter>
     </Card>
