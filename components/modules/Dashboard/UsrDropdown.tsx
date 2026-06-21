@@ -7,6 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { logoutUser } from "@/service/auth.service";
 import { UserInfo } from "@/types/user.types";
 import { Key, LogOut, User } from "lucide-react";
 import Link from "next/link";
@@ -66,7 +67,9 @@ const UserDropdown = ({ userInfo }: UserDropdownProps) => {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          onClick={() => {}}
+          onClick={() => {
+            logoutUser;
+          }}
           className="cursor-pointer text-red-600"
         >
           <LogOut className="mr-2 h-4 w-4" />
