@@ -1,7 +1,5 @@
 "use client";
-import axios from "axios";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,15 +8,9 @@ import {
 } from "@/components/ui/card";
 import { formatCurrency } from "@/lib/formatters";
 import { getVoteScore, truncatePreview } from "@/lib/ideaUtils";
-import { initiatePayment } from "@/service/purchase.service";
 import { PublicIdea } from "@/types/idea.types";
-import { useMutation } from "@tanstack/react-query";
 import { ArrowBigDown, ArrowBigUp, Lock, MessageSquare } from "lucide-react";
 import Link from "next/link";
-import { redirect, useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { useState } from "react";
-import { ILoginResponse } from "@/types/auth.types";
 import { UserInfo } from "@/types/user.types";
 
 interface IdeaCardProps {
@@ -27,28 +19,7 @@ interface IdeaCardProps {
 }
 
 const IdeaCard = ({ idea, user }: IdeaCardProps) => {
-  const router = useRouter();
-  const [paymentData, setPaymentData] = useState();
   const score = getVoteScore(idea.upvoteCount, idea.downvoteCount);
-
-  const mutation = useMutation({
-    mutationFn: (id: string) => initiatePayment({ ideaId: id }),
-
-    onSuccess: (data) => {
-      if (!data?.checkoutUrl) {
-        return;
-      }
-
-      router.push(data.checkoutUrl);
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || "Failed to post comment");
-    },
-  });
-
-  const handlePurchase = (id: string) => {
-    mutation.mutate(id);
-  };
 
   return (
     <Card className="group flex h-full flex-col transition-shadow hover:shadow-md">
@@ -98,29 +69,19 @@ const IdeaCard = ({ idea, user }: IdeaCardProps) => {
         </div>
         <div className="flex items-center gap-3">
           {user ? (
-            <>
-              <Button
-                onClick={() => handlePurchase(idea.id)}
-                disabled={mutation.isPending}
-              >
-                {mutation.isPending ? "Processing..." : "Pay Now"}
-              </Button>
-              <Link
-                href={`/ideas/${idea.id}`}
-                className="text-sm font-medium text-primary hover:underline"
-              >
-                Read more
-              </Link>
-            </>
+            <Link
+              href={`/ideas/${idea.id}`}
+              className="text-sm font-medium text-primary hover:underline"
+            >
+              Read more
+            </Link>
           ) : (
-            <>
-              <Link
-                href={`/register`}
-                className="text-sm font-medium text-primary hover:underline"
-              >
-                Login to see more
-              </Link>
-            </>
+            <Link
+              href={`/register`}
+              className="text-sm font-medium text-primary hover:underline"
+            >
+              Login to see more
+            </Link>
           )}
         </div>
       </CardFooter>

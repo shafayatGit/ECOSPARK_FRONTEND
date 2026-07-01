@@ -15,6 +15,7 @@ interface VoteButtonsProps {
   downvoteCount: number;
   userVote: VoteType | null;
   disabled?: boolean;
+  isAuthor?: boolean;
   className?: string;
 }
 
@@ -24,6 +25,7 @@ const VoteButtons = ({
   downvoteCount,
   userVote,
   disabled = false,
+  isAuthor = false,
   className,
 }: VoteButtonsProps) => {
   const queryClient = useQueryClient();
@@ -50,6 +52,11 @@ const VoteButtons = ({
   });
 
   const handleVote = (type: VoteType) => {
+    if (isAuthor) {
+      toast.error("You cannot vote on your own idea.");
+      return;
+    }
+
     if (disabled) {
       toast.info("Sign in to vote on ideas", {
         action: {
@@ -100,7 +107,9 @@ const VoteButtons = ({
         )}
       </Button>
 
-      <span className="px-2 py-1 text-sm font-semibold tabular-nums">{score}</span>
+      <span className="px-2 py-1 text-sm font-semibold tabular-nums">
+        {score}
+      </span>
 
       <Button
         type="button"

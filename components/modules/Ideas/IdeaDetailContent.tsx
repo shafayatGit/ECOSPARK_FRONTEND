@@ -12,13 +12,7 @@ import { getMyVote } from "@/service/votes.service";
 import { VoteType } from "@/types/vote.types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
-import {
-  AlertCircle,
-  ArrowLeft,
-  Loader2,
-  Lock,
-  MessageSquare,
-} from "lucide-react";
+import { AlertCircle, ArrowLeft, Lock } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
@@ -53,10 +47,17 @@ const IdeaDetailContent = ({
     enabled: isAuthenticated && !!ideaResponse?.success,
   });
 
+  const shouldFetchComments =
+    !!ideaResponse?.success &&
+    !!ideaResponse.data &&
+    (!ideaResponse.data.isPaid ||
+      ideaResponse.data.hasFullAccess ||
+      ideaResponse.data.isAuthor);
+
   const { data: commentsResponse, isLoading: commentsLoading } = useQuery({
     queryKey: ["idea-comments", ideaId],
     queryFn: () => getComments(ideaId),
-    enabled: !!ideaResponse?.success && !!ideaResponse.data,
+    enabled: shouldFetchComments,
   });
 
   const purchaseMutation = useMutation({
@@ -124,7 +125,9 @@ const IdeaDetailContent = ({
   }
 
   const idea = ideaResponse.data;
-  const hasFullAccess = idea.hasFullAccess;
+  const hasFullAccess = idea.hasFullAccess ?? !idea.isPaid;
+  const isPremiumLocked = idea.isPaid && !hasFullAccess;
+  const canViewDiscussion = !isPremiumLocked || idea.isAuthor;
   const userVote = (voteResponse?.data?.type as VoteType | undefined) ?? null;
   const comments = commentsResponse?.data ?? [];
 
@@ -144,6 +147,7 @@ const IdeaDetailContent = ({
           downvoteCount={idea.downvoteCount}
           userVote={userVote}
           disabled={!isAuthenticated}
+          isAuthor={idea.isAuthor}
         />
 
         <div className="min-w-0 flex-1 space-y-6">
@@ -193,60 +197,92 @@ const IdeaDetailContent = ({
             </p>
           </section>
 
-          <section className="relative space-y-3">
-            <h2 className="font-heading text-xl font-semibold">
-              Proposed Solution
-            </h2>
-
-            <p className="leading-relaxed whitespace-pre-wrap text-muted-foreground">
-              {idea.proposedSolution}
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="font-heading text-xl font-semibold">
-              Extended Description
-            </h2>
-            <p className="leading-relaxed whitespace-pre-wrap text-muted-foreground">
-              {idea.description}
-            </p>
-          </section>
-
-          <section className="space-y-3">
-            <h2 className="font-heading text-xl font-semibold">Images</h2>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {idea.imageUrls.map((url, index) => (
-                <img
-                  key={url}
-                  src={url}
-                  alt={`${idea.title} image ${index + 1}`}
-                  className="aspect-video w-full rounded-xl border object-cover"
-                />
-              ))}
-            </div>
-          </section>
-
-          {idea.isPaid && hasFullAccess && (
-            <Alert>
-              <AlertDescription>
-                You have full access to this premium idea.
+          {isPremiumLocked ? (
+            <Alert className="border-amber-300/70 bg-amber-50/80 dark:border-amber-500/30 dark:bg-amber-950/30">
+              <Lock className="size-4" />
+              <AlertDescription className="space-y-3">
+                <div>
+                  <p className="font-medium text-foreground">
+                    Unlock this premium idea
+                  </p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Pay once to view the proposed solution, extended
+                    description, images, and discussion for this idea.
+                  </p>
+                </div>
+                <Button
+                  onClick={handlePurchase}
+                  disabled={purchaseMutation.isPending}
+                  className="w-fit"
+                >
+                  {purchaseMutation.isPending
+                    ? "Redirecting..."
+                    : isAuthenticated
+                      ? "Pay now"
+                      : "Login to unlock"}
+                </Button>
               </AlertDescription>
             </Alert>
+          ) : (
+            <>
+              <section className="relative space-y-3">
+                <h2 className="font-heading text-xl font-semibold">
+                  Proposed Solution
+                </h2>
+
+                <p className="leading-relaxed whitespace-pre-wrap text-muted-foreground">
+                  {idea.proposedSolution}
+                </p>
+              </section>
+
+              <section className="space-y-3">
+                <h2 className="font-heading text-xl font-semibold">
+                  Extended Description
+                </h2>
+                <p className="leading-relaxed whitespace-pre-wrap text-muted-foreground">
+                  {idea.description}
+                </p>
+              </section>
+
+              <section className="space-y-3">
+                <h2 className="font-heading text-xl font-semibold">Images</h2>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  {idea.imageUrls.map((url, index) => (
+                    <img
+                      key={url}
+                      src={url}
+                      alt={`${idea.title} image ${index + 1}`}
+                      className="aspect-video w-full rounded-xl border object-cover"
+                    />
+                  ))}
+                </div>
+              </section>
+
+              {idea.isPaid && hasFullAccess && (
+                <Alert>
+                  <AlertDescription>
+                    You have full access to this premium idea.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </>
           )}
         </div>
       </div>
 
-      <section className="border-t pt-8">
-        {commentsLoading ? (
-          <Skeleton className="h-48 w-full" />
-        ) : (
-          <CommentThread
-            ideaId={ideaId}
-            comments={comments}
-            isAuthenticated={isAuthenticated}
-          />
-        )}
-      </section>
+      {canViewDiscussion && (
+        <section className="border-t pt-8">
+          {commentsLoading ? (
+            <Skeleton className="h-48 w-full" />
+          ) : (
+            <CommentThread
+              ideaId={ideaId}
+              comments={comments}
+              isAuthenticated={isAuthenticated}
+            />
+          )}
+        </section>
+      )}
     </div>
   );
 };
