@@ -2,7 +2,7 @@
 
 import { ApiResponse } from "@/types/api.types";
 import axios from "axios";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { isTokenExpiringSoon } from "../tokenUtils";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -22,22 +22,39 @@ const axiosInstance = async () => {
     .join("; ");
   // eg Cookie: "accessToken=abc123; refreshToken=def456"
 
-  const instance = axios.create({
+  return axios.create({
     baseURL: API_BASE_URL,
     timeout: 30000,
     headers: {
-      "Content-Type": "application/json",
+      Accept: "application/json",
       Cookie: cookieHeader,
     },
   });
-
-  return instance;
 };
 
 export interface ApiRequestOptions {
   params?: Record<string, unknown>;
   headers?: Record<string, string>;
 }
+
+const mergeHeaders = (
+  optionsHeaders: Record<string, string> | undefined,
+  data?: unknown,
+) => {
+  const mergedHeaders = {
+    ...(optionsHeaders ?? {}),
+  };
+
+  const hasContentType = Object.keys(mergedHeaders).some(
+    (headerKey) => headerKey.toLowerCase() === "content-type",
+  );
+
+  if (!hasContentType && !(data instanceof FormData)) {
+    mergedHeaders["Content-Type"] = "application/json";
+  }
+
+  return mergedHeaders;
+};
 
 const httpGet = async <TData>(
   endpoint: string,
@@ -65,7 +82,7 @@ const httpPost = async <TData>(
     const instance = await axiosInstance();
     const response = await instance.post<ApiResponse<TData>>(endpoint, data, {
       params: options?.params,
-      headers: options?.headers,
+      headers: mergeHeaders(options?.headers, data),
     });
     return response.data;
   } catch (error) {

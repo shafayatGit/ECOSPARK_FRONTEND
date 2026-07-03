@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use server";
+
 import { httpClient } from "@/lib/axios/httpClient";
 
 interface ICreateSubscription {
@@ -10,16 +13,26 @@ interface IResponseSubscription {
   isActive: true;
   subscribedAt: string;
 }
-export async function createComment(payload: ICreateSubscription) {
+
+export async function subscribeToNewsletter(payload: ICreateSubscription) {
   try {
-    return await httpClient.post<IResponseSubscription>(
+    const res = await httpClient.post<IResponseSubscription>(
       "/api/newsletter/subscribe",
       payload,
     );
+    return {
+      success: true,
+      message: "Subscribed successfully!",
+      data: res.data,
+    };
   } catch (error: any) {
+    const errorMsg =
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to subscribe to newsletter.";
     return {
       success: false,
-      message: error.message || "Failed to post comment.",
+      message: errorMsg,
       data: null,
     };
   }

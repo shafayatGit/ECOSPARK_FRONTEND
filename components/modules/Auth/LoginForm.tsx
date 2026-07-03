@@ -13,10 +13,11 @@ import {
 } from "@/components/ui/card";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { mapErrorMessage } from "@/lib/errorMapping";
 import AppField from "../../shared/Form/AppField";
 import AppSubmitButton from "../../shared/Form/AppSubmitButton";
 import { ILoginPayload, loginZodSchema } from "@/zod/auth.validation";
@@ -46,7 +47,11 @@ const LoginForm = () => {
         const result = (await mutateAsync(value)) as any;
 
         if (result && !result.success) {
-          setServerError(result.message || "Login failed. Please try again.");
+          const userFriendlyMessage = mapErrorMessage(
+            result.message || "Login failed. Please try again.",
+            { context: "login" },
+          );
+          setServerError(userFriendlyMessage);
           return;
         }
 
@@ -55,7 +60,11 @@ const LoginForm = () => {
         }
       } catch (error: any) {
         console.log(`Login failed: ${error?.message} ${error}`);
-        setServerError(`Login failed: ${error?.message || "Unexpected error"}`);
+        const userFriendlyMessage = mapErrorMessage(
+          error?.message || "Unexpected error",
+          { context: "login" },
+        );
+        setServerError(userFriendlyMessage);
       }
     },
   });
@@ -137,8 +146,13 @@ const LoginForm = () => {
           </div>
 
           {serverError && (
-            <Alert variant="destructive">
-              <AlertDescription>{serverError}</AlertDescription>
+            <Alert variant="destructive" className="space-y-2">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+                <AlertDescription className="text-sm">
+                  {serverError}
+                </AlertDescription>
+              </div>
             </Alert>
           )}
 

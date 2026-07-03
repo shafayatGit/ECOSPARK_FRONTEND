@@ -14,9 +14,12 @@ export type IRegisterActionSuccess = {
 export type IRegisterActionResult = IRegisterActionSuccess | ApiErrorResponse;
 
 export const registerAction = async (
-  payload: IRegisterPayload,
+  payload: any,
 ): Promise<IRegisterActionResult> => {
-  const parsedPayload = registerZodSchema.safeParse(payload);
+  // Extract image if present
+  const { image, ...dataWithoutImage } = payload;
+
+  const parsedPayload = registerZodSchema.safeParse(dataWithoutImage);
 
   if (!parsedPayload.success) {
     const firstError = parsedPayload.error.issues[0].message || "Invalid input";
@@ -29,10 +32,19 @@ export const registerAction = async (
   let targetPath = "";
 
   try {
-    const response = await httpClient.post<any>(
-      "/auth/register",
-      parsedPayload.data,
-    );
+    // Build FormData for request
+    const formData = new FormData();
+    formData.append("name", parsedPayload.data.name);
+    formData.append("email", parsedPayload.data.email);
+    formData.append("password", parsedPayload.data.password);
+
+    // Add image if provided
+    if (image instanceof File) {
+      formData.append("image", image);
+    }
+
+    // Make request with httpClient
+    const response = await httpClient.post<any>("/auth/register", formData);
 
     if (!response.success) {
       return {
@@ -41,16 +53,14 @@ export const registerAction = async (
       };
     }
 
-    const { accessToken, refreshToken, token } = response.data;
-
-    // Save authentication details in cookies
-
     targetPath = `/verify-email?email=${encodeURIComponent(parsedPayload.data.email)}`;
   } catch (error: any) {
     console.error("Registration failed:", error);
+    const errorMessage =
+      error?.response?.data?.message || error?.message || "Unknown error";
     return {
       success: false,
-      message: `Registration failed: ${error?.response?.data?.message || error?.message || "Unknown error"}`,
+      message: `Registration failed: ${errorMessage}`,
     };
   }
 

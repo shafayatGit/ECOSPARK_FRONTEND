@@ -11,12 +11,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ImageUploadField } from "@/components/shared/Form/ImageUploadField";
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "@tanstack/react-query";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useImageUpload } from "@/hooks/useImageUpload";
+import { IMAGE_CONSTRAINTS } from "@/lib/imageUploadUtils";
+import { mapErrorMessage } from "@/lib/errorMapping";
 import AppField from "../../shared/Form/AppField";
 import AppSubmitButton from "../../shared/Form/AppSubmitButton";
 import { IRegisterPayload, registerZodSchema } from "@/zod/auth.validation";
@@ -25,6 +29,14 @@ const RegisterForm = () => {
   const [serverError, setServerError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
+  const {
+    selectedFile,
+    previewUrl,
+    error: imageError,
+    handleFileSelect: onImageSelect,
+    clearFile: onClearImage,
+    clearError: clearImageError,
+  } = useImageUpload(IMAGE_CONSTRAINTS.PROFILE_IMAGE_MAX_SIZE);
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: (payload: IRegisterPayload) => registerAction(payload),
@@ -40,10 +52,22 @@ const RegisterForm = () => {
     onSubmit: async ({ value }) => {
       setServerError(null);
       try {
-        const result = (await mutateAsync(value)) as any;
+        const registerPayload: any = {
+          ...value,
+        };
+
+        if (selectedFile?.file) {
+          registerPayload.image = selectedFile.file;
+        }
+
+        const result = (await mutateAsync(registerPayload)) as any;
 
         if (result && !result.success) {
-          setServerError(result.message || "Registration failed. Please try again.");
+          const userFriendlyMessage = mapErrorMessage(
+            result.message || "Registration failed. Please try again.",
+            { context: "register" },
+          );
+          setServerError(userFriendlyMessage);
           return;
         }
 
@@ -52,10 +76,19 @@ const RegisterForm = () => {
         }
       } catch (error: any) {
         console.log(`Registration failed: ${error?.message} ${error}`);
-        setServerError(`Registration failed: ${error?.message || "Unexpected error"}`);
+        const userFriendlyMessage = mapErrorMessage(
+          error?.message || "Unexpected error",
+          { context: "register" },
+        );
+        setServerError(userFriendlyMessage);
       }
     },
   });
+
+  const handleImageSelect = (file: File) => {
+    onImageSelect(file);
+    clearImageError();
+  };
 
   return (
     <Card className="w-full max-w-md mx-auto shadow-md rounded-xl">
@@ -138,9 +171,27 @@ const RegisterForm = () => {
             )}
           </form.Field>
 
+          <ImageUploadField
+            label="Profile Picture (Optional)"
+            previewUrl={previewUrl}
+            error={imageError}
+            isLoading={false}
+            disabled={isPending}
+            onFileSelect={handleImageSelect}
+            onClear={onClearImage}
+            maxSize={IMAGE_CONSTRAINTS.PROFILE_IMAGE_MAX_SIZE}
+            placeholder="Upload your profile picture"
+            fileName={selectedFile?.file.name}
+          />
+
           {serverError && (
-            <Alert variant="destructive">
-              <AlertDescription>{serverError}</AlertDescription>
+            <Alert variant="destructive" className="space-y-2">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+                <AlertDescription className="text-sm">
+                  {serverError}
+                </AlertDescription>
+              </div>
             </Alert>
           )}
 
@@ -151,7 +202,7 @@ const RegisterForm = () => {
               <AppSubmitButton
                 isPending={isSubmitting || isPending}
                 pendingLabel="Signing Up..."
-                disabled={!canSubmit}
+                disabled={!canSubmit || !!imageError}
               >
                 Sign Up
               </AppSubmitButton>

@@ -1,5 +1,25 @@
-import type { NextConfig } from "next"
+import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {}
+interface ExtendedNextConfig extends NextConfig {
+  serverActions?: {
+    bodySizeLimit: string;
+  };
+}
 
-export default nextConfig
+const nextConfig: ExtendedNextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+    ],
+  },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
+  },
+};
+
+export default nextConfig;

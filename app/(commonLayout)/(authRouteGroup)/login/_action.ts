@@ -44,9 +44,36 @@ export const loginAction = async (
     );
 
     if (!response?.success || !response.data) {
+      const errorMessage = response?.message || "Login failed";
+
+      // Provide specific error messages for common scenarios
+      let userFriendlyMessage = errorMessage;
+
+      if (
+        errorMessage.toLowerCase().includes("email") &&
+        errorMessage.toLowerCase().includes("not found")
+      ) {
+        userFriendlyMessage =
+          "Email address not found. Please check your email or create a new account.";
+      } else if (
+        errorMessage.toLowerCase().includes("password") &&
+        errorMessage.toLowerCase().includes("incorrect")
+      ) {
+        userFriendlyMessage = "Incorrect password. Please try again.";
+      } else if (errorMessage.toLowerCase().includes("invalid credentials")) {
+        userFriendlyMessage =
+          "Invalid email or password. Please check and try again.";
+      } else if (
+        errorMessage.toLowerCase().includes("account disabled") ||
+        errorMessage.toLowerCase().includes("suspended")
+      ) {
+        userFriendlyMessage =
+          "Your account has been disabled. Please contact support.";
+      }
+
       return {
         success: false,
-        message: response?.message || "Login failed",
+        message: userFriendlyMessage,
       };
     }
 
@@ -69,18 +96,58 @@ export const loginAction = async (
   } catch (error: any) {
     console.log(error, "error");
 
-    if (
-      error &&
-      error.response &&
-      error.response.data?.message === "Email not verified"
-    ) {
+    const errorMessage =
+      error?.response?.data?.message || error?.message || "Login failed";
+
+    // Handle specific error scenarios
+    if (errorMessage === "Email not verified") {
       targetPath = `/verify-email?email=${encodeURIComponent(payload.email)}`;
-    } else {
+      return {
+        success: true,
+        redirectPath: targetPath,
+      };
+    } else if (errorMessage.toLowerCase().includes("too many attempts")) {
       return {
         success: false,
-        message: `Login failed: ${error?.message || "Unknown error"}`,
+        message:
+          "Too many login attempts. Please try again later or reset your password.",
+      };
+    } else if (
+      errorMessage.toLowerCase().includes("network") ||
+      errorMessage.toLowerCase().includes("connection")
+    ) {
+      return {
+        success: false,
+        message: "Network error. Please check your connection and try again.",
+      };
+    } else if (
+      errorMessage.toLowerCase().includes("email") &&
+      errorMessage.toLowerCase().includes("not found")
+    ) {
+      return {
+        success: false,
+        message:
+          "Email address not found. Please check your email or create a new account.",
+      };
+    } else if (
+      errorMessage.toLowerCase().includes("password") &&
+      errorMessage.toLowerCase().includes("incorrect")
+    ) {
+      return {
+        success: false,
+        message: "Incorrect password. Please try again.",
+      };
+    } else if (errorMessage.toLowerCase().includes("invalid")) {
+      return {
+        success: false,
+        message: "Invalid email or password. Please check and try again.",
       };
     }
+
+    return {
+      success: false,
+      message: `Login failed: ${errorMessage}`,
+    };
   }
 
   return {

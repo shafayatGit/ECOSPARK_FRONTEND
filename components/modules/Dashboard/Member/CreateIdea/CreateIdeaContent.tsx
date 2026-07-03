@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { MultiImageUploadField } from "@/components/shared/Form/ImageUploadField";
 import {
   Select,
   SelectContent,
@@ -16,6 +17,8 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import { useMultiImageUpload } from "@/hooks/useImageUpload";
+import { IMAGE_CONSTRAINTS } from "@/lib/imageUploadUtils";
 import { getCategories } from "@/service/category.service";
 import {
   createIdea,
@@ -23,10 +26,7 @@ import {
   submitIdea,
   updateIdea,
 } from "@/service/memberIdeas.service";
-import {
-  ICreateIdeaPayload,
-  createIdeaSchema,
-} from "@/zod/idea.validation";
+import { ICreateIdeaPayload, createIdeaSchema } from "@/zod/idea.validation";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, ArrowLeft, Send } from "lucide-react";
@@ -54,7 +54,19 @@ const CreateIdeaContent = () => {
   const [isPaid, setIsPaid] = useState(false);
   const initializedIdeaId = useRef<string | null>(null);
 
-  const buildPayload = (value: typeof formDefaultValues): ICreateIdeaPayload => ({
+  const {
+    selectedFiles,
+    previewUrls,
+    error: imageError,
+    handleFilesSelect,
+    removeFile,
+    clearError: clearImageError,
+    fileCount,
+  } = useMultiImageUpload(IMAGE_CONSTRAINTS.MAX_IDEA_IMAGES);
+
+  const buildPayload = (
+    value: typeof formDefaultValues,
+  ): ICreateIdeaPayload => ({
     title: value.title.trim(),
     problemStatement: value.problemStatement.trim(),
     proposedSolution: value.proposedSolution.trim(),
@@ -80,11 +92,30 @@ const CreateIdeaContent = () => {
   const existingIdea = ideaResponse?.data;
 
   const saveMutation = useMutation({
-    mutationFn: async (payload: ICreateIdeaPayload) => {
-      if (isEditMode && ideaId) {
-        return updateIdea(ideaId, payload);
+    mutationFn: async (payload: any) => {
+      // Build FormData for multipart upload
+      const formData = new FormData();
+      formData.append("title", payload.title);
+      formData.append("problemStatement", payload.problemStatement);
+      formData.append("proposedSolution", payload.proposedSolution);
+      if (payload.description) {
+        formData.append("description", payload.description);
       }
-      return createIdea(payload);
+      formData.append("categoryId", payload.categoryId);
+      formData.append("isPaid", String(payload.isPaid));
+      if (payload.price) {
+        formData.append("price", String(payload.price));
+      }
+
+      // Add images
+      selectedFiles.forEach((item) => {
+        formData.append("images", item.file);
+      });
+
+      if (isEditMode && ideaId) {
+        return updateIdea(ideaId, formData);
+      }
+      return createIdea(formData);
     },
   });
 
@@ -198,7 +229,12 @@ const CreateIdeaContent = () => {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <Button variant="ghost" size="sm" asChild className="mb-2 -ml-2 w-fit">
+          <Button
+            variant="ghost"
+            size="sm"
+            asChild
+            className="mb-2 -ml-2 w-fit"
+          >
             <Link href="/dashboard/my-ideas">
               <ArrowLeft data-icon="inline-start" />
               Back to My Ideas
@@ -256,14 +292,15 @@ const CreateIdeaContent = () => {
                 {(field) => {
                   const categoryError =
                     serverError === "Category is required" ||
-                    (serverError?.includes("Category") &&
-                      !field.state.value);
+                    (serverError?.includes("Category") && !field.state.value);
 
                   return (
                     <div className="space-y-1.5">
                       <Label
                         htmlFor="categoryId"
-                        className={categoryError ? "text-destructive" : undefined}
+                        className={
+                          categoryError ? "text-destructive" : undefined
+                        }
                       >
                         Category
                       </Label>
@@ -358,14 +395,27 @@ const CreateIdeaContent = () => {
                 )}
               </form.Field>
 
+              {/* Images Upload */}
+              <MultiImageUploadField
+                label="Idea Images (Optional)"
+                previewUrls={previewUrls}
+                error={imageError}
+                isLoading={isSaving}
+                disabled={isSaving || isSubmitting}
+                onFilesSelect={handleFilesSelect}
+                onRemove={removeFile}
+                maxFiles={IMAGE_CONSTRAINTS.MAX_IDEA_IMAGES}
+                maxSize={IMAGE_CONSTRAINTS.IDEA_IMAGE_MAX_SIZE}
+                placeholder="Upload up to 4 images for your idea"
+                fileNames={selectedFiles.map((item) => item.file.name)}
+              />
+
               <div className="space-y-3 rounded-lg border p-4">
                 <div className="flex items-center gap-2">
                   <Checkbox
                     id="isPaid"
                     checked={isPaid}
-                    onCheckedChange={(checked) =>
-                      setIsPaid(checked === true)
-                    }
+                    onCheckedChange={(checked) => setIsPaid(checked === true)}
                   />
                   <Label htmlFor="isPaid">This is a paid idea</Label>
                 </div>

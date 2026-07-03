@@ -91,6 +91,7 @@ export type IChangePasswordPayload = z.infer<typeof changePasswordSchema>;
 
 export const updateProfileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
+  image: z.any().optional(), // File object, validated on backend
 });
 
 export type IUpdateProfilePayload = z.infer<typeof updateProfileSchema>;

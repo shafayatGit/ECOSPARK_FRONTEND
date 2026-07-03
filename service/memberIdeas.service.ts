@@ -55,22 +55,25 @@ export async function getIdeaById(ideaId: string) {
   }
 }
 
-export async function createIdea(payload: ICreateIdeaPayload) {
+export async function createIdea(payload: ICreateIdeaPayload | FormData) {
   try {
-    const parsed = createIdeaSchema.safeParse(payload);
+    let body: any = payload;
+    if (!(payload instanceof FormData)) {
+      const parsed = createIdeaSchema.safeParse(payload);
 
-    if (!parsed.success) {
-      return {
-        success: false,
-        message: parsed.error.issues[0]?.message || "Invalid idea data.",
-        data: null,
+      if (!parsed.success) {
+        return {
+          success: false,
+          message: parsed.error.issues[0]?.message || "Invalid idea data.",
+          data: null,
+        };
+      }
+
+      body = {
+        ...parsed.data,
+        ...(parsed.data.isPaid ? {} : { price: undefined }),
       };
     }
-
-    const body = {
-      ...parsed.data,
-      ...(parsed.data.isPaid ? {} : { price: undefined }),
-    };
 
     return await httpClient.post<MemberIdea>("/api/ideas", body);
   } catch (error: any) {
@@ -82,22 +85,28 @@ export async function createIdea(payload: ICreateIdeaPayload) {
   }
 }
 
-export async function updateIdea(ideaId: string, payload: IUpdateIdeaPayload) {
+export async function updateIdea(
+  ideaId: string,
+  payload: IUpdateIdeaPayload | FormData,
+) {
   try {
-    const parsed = updateIdeaSchema.safeParse(payload);
+    let body: any = payload;
+    if (!(payload instanceof FormData)) {
+      const parsed = updateIdeaSchema.safeParse(payload);
 
-    if (!parsed.success) {
-      return {
-        success: false,
-        message: parsed.error.issues[0]?.message || "Invalid idea data.",
-        data: null,
+      if (!parsed.success) {
+        return {
+          success: false,
+          message: parsed.error.issues[0]?.message || "Invalid idea data.",
+          data: null,
+        };
+      }
+
+      body = {
+        ...parsed.data,
+        ...(parsed.data.isPaid === false ? { price: undefined } : {}),
       };
     }
-
-    const body = {
-      ...parsed.data,
-      ...(parsed.data.isPaid === false ? { price: undefined } : {}),
-    };
 
     return await httpClient.patch<MemberIdea>(`/api/ideas/${ideaId}`, body);
   } catch (error: any) {
