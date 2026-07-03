@@ -1,5 +1,26 @@
 import { z } from "zod";
 
+const booleanFromString = z.preprocess((value) => {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (["true", "1", "yes", "on"].includes(normalized)) return true;
+    if (["false", "0", "no", "off", ""].includes(normalized)) return false;
+  }
+  return value;
+}, z.boolean());
+
+const numberFromString = z.preprocess((value) => {
+  if (typeof value === "number") return value;
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (trimmed === "") return undefined;
+    const parsed = Number(trimmed);
+    return Number.isNaN(parsed) ? value : parsed;
+  }
+  return value;
+}, z.number());
+
 const paidIdeaRefinement = (
   data: { isPaid?: boolean; price?: number },
   ctx: z.RefinementCtx,
@@ -31,8 +52,13 @@ export const createIdeaSchema = z
       .min(20, "Proposed solution must be at least 20 characters"),
     description: z.string().optional(),
     categoryId: z.string().min(1, "Category is required"),
-    isPaid: z.boolean().optional().default(false),
-    price: z.coerce.number().positive().optional(),
+    isPaid: booleanFromString.optional().default(false),
+    price: numberFromString
+      .optional()
+      .refine(
+        (value) => value === undefined || value > 0,
+        "Price must be greater than 0",
+      ),
   })
   .superRefine(paidIdeaRefinement);
 
@@ -43,8 +69,13 @@ export const updateIdeaSchema = z
     proposedSolution: z.string().min(20).optional(),
     description: z.string().optional(),
     categoryId: z.string().min(1).optional(),
-    isPaid: z.boolean().optional(),
-    price: z.coerce.number().positive().optional(),
+    isPaid: booleanFromString.optional(),
+    price: numberFromString
+      .optional()
+      .refine(
+        (value) => value === undefined || value > 0,
+        "Price must be greater than 0",
+      ),
   })
   .superRefine(paidIdeaRefinement);
 

@@ -51,6 +51,11 @@ export function mapErrorMessage(
     return "Passwords do not match.";
   }
 
+  // Invalid session errors (typically means wrong current password in change password context)
+  if (msg.includes("invalid session")) {
+    return "Current password is incorrect. Please try again.";
+  }
+
   // Credentials
   if (
     msg.includes("invalid credentials") ||
@@ -77,13 +82,25 @@ export function mapErrorMessage(
     return "Please wait a moment before trying again.";
   }
 
+  // CORS and Origin errors
+  if (
+    msg.includes("origin") ||
+    msg.includes("cors") ||
+    msg.includes("cross-origin")
+  ) {
+    if (msg.includes("missing") || msg.includes("null")) {
+      return "Connection error. Please refresh the page and try again.";
+    }
+    return "Access denied. Please ensure you're accessing from an authorized location.";
+  }
+
   // Network errors
   if (msg.includes("network") || msg.includes("connection")) {
-    return "Network error. Please check your connection and try again.";
+    return "Connection failed. Please check your internet connection and try again.";
   }
 
   if (msg.includes("timeout")) {
-    return "Request timed out. Please check your connection and try again.";
+    return "The request took too long. Please check your connection and try again.";
   }
 
   // Upload errors
@@ -177,6 +194,8 @@ export function isRetriableError(error: any): boolean {
     msg.includes("connection") ||
     msg.includes("throttled") ||
     msg.includes("too many attempts") ||
+    msg.includes("origin") ||
+    msg.includes("cors") ||
     msg.includes("503") ||
     msg.includes("502")
   );

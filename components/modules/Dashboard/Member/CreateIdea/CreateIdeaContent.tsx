@@ -19,6 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { useMultiImageUpload } from "@/hooks/useImageUpload";
 import { IMAGE_CONSTRAINTS } from "@/lib/imageUploadUtils";
+import { uploadFilesToCloudinary } from "@/lib/cloudinaryUpload";
 import { getCategories } from "@/service/category.service";
 import {
   createIdea,
@@ -91,31 +92,111 @@ const CreateIdeaContent = () => {
   const categories = categoriesResponse?.data ?? [];
   const existingIdea = ideaResponse?.data;
 
+  const buildRequestBody = (
+    payload: ICreateIdeaPayload,
+  ): ICreateIdeaPayload | FormData => {
+    const body = {
+      ...payload,
+      ...(payload.isPaid ? {} : { price: undefined }),
+    };
+
+    if (selectedFiles.length === 0) {
+      return body;
+    }
+
+    const formData = new FormData();
+    formData.append("title", body.title);
+    formData.append("problemStatement", body.problemStatement);
+    formData.append("proposedSolution", body.proposedSolution);
+    if (body.description) {
+      formData.append("description", body.description);
+    }
+    formData.append("categoryId", body.categoryId);
+    if (body.isPaid) {
+      formData.append("isPaid", "true");
+    }
+    if (body.price !== undefined && body.price !== null) {
+      formData.append("price", String(body.price));
+    }
+
+    selectedFiles.forEach((item) => {
+      formData.append("images", item.file);
+    });
+
+    return formData;
+  };
+
   const saveMutation = useMutation({
-    mutationFn: async (payload: any) => {
-      // Build FormData for multipart upload
-      const formData = new FormData();
-      formData.append("title", payload.title);
-      formData.append("problemStatement", payload.problemStatement);
-      formData.append("proposedSolution", payload.proposedSolution);
-      if (payload.description) {
-        formData.append("description", payload.description);
-      }
-      formData.append("categoryId", payload.categoryId);
-      formData.append("isPaid", String(payload.isPaid));
-      if (payload.price) {
-        formData.append("price", String(payload.price));
+    mutationFn: async (payload: ICreateIdeaPayload) => {
+      const requestBody = buildRequestBody(payload);
+      // Debug: log what we're about to send (field summary, not file contents)
+      try {
+        const hasFiles =
+          requestBody instanceof FormData ||
+          (typeof requestBody === "object" &&
+            requestBody !== null &&
+            typeof (requestBody as any).append === "function");
+        const summary = {
+          title: payload.title,
+          categoryId: payload.categoryId,
+          isPaid: payload.isPaid,
+          price: payload.price,
+          imagesCount: hasFiles ? selectedFiles.length : 0,
+          sendingAs: hasFiles ? "multipart/form-data" : "application/json",
+        };
+        // eslint-disable-next-line no-console
+        console.debug("CreateIdea: sending payload summary", summary);
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.debug("CreateIdea: failed to build debug summary", e);
       }
 
-      // Add images
-      selectedFiles.forEach((item) => {
-        formData.append("images", item.file);
-      });
+      let result;
+      // If we have files and Cloudinary is configured, upload them first and
+      // send a JSON payload with `imageUrls` to avoid multipart form type issues
+      const cloudConfigured =
+        typeof process !== "undefined" &&
+        Boolean(process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) &&
+        Boolean(process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET);
 
-      if (isEditMode && ideaId) {
-        return updateIdea(ideaId, formData);
+      if (selectedFiles.length > 0 && cloudConfigured) {
+        const files = selectedFiles.map((s) => s.file);
+        const uploaded = await uploadFilesToCloudinary(files);
+
+        const jsonBody: any = {
+          title: payload.title,
+          problemStatement: payload.problemStatement,
+          proposedSolution: payload.proposedSolution,
+          description: payload.description,
+          categoryId: payload.categoryId,
+          isPaid: payload.isPaid,
+          price: payload.price,
+          imageUrls: uploaded,
+        };
+
+        if (isEditMode && ideaId) {
+          result = await updateIdea(ideaId, jsonBody);
+        } else {
+          result = await createIdea(jsonBody);
+        }
+      } else {
+        if (isEditMode && ideaId) {
+          result = await updateIdea(ideaId, requestBody);
+        } else {
+          result = await createIdea(requestBody);
+        }
       }
-      return createIdea(formData);
+
+      // If server provided errorSources, log them for debugging
+      if (result && !result.success && (result as any).errorSources) {
+        // eslint-disable-next-line no-console
+        console.debug(
+          "CreateIdea: server errorSources",
+          (result as any).errorSources,
+        );
+      }
+
+      return result;
     },
   });
 
@@ -142,7 +223,24 @@ const CreateIdeaContent = () => {
     const result = await saveMutation.mutateAsync(parsed.data);
 
     if (!result.success) {
-      setServerError(result.message || "Failed to save idea");
+      // If server returned structured validation errors, show them clearly
+      const sources = (result as any).errorSources;
+      if (Array.isArray(sources) && sources.length > 0) {
+        const msgs = sources
+          .map((s: any) => {
+            const path =
+              s.path ||
+              s.field ||
+              (s.location && s.location.join?.(".")) ||
+              null;
+            return path ? `${path}: ${s.message}` : s.message || String(s);
+          })
+          .join("; ");
+        setServerError(msgs);
+      } else {
+        setServerError(result.message || "Failed to save idea");
+      }
+
       return null;
     }
 

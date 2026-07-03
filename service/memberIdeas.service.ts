@@ -57,8 +57,13 @@ export async function getIdeaById(ideaId: string) {
 
 export async function createIdea(payload: ICreateIdeaPayload | FormData) {
   try {
+    const isFormDataLike =
+      typeof payload === "object" &&
+      payload !== null &&
+      typeof (payload as any).append === "function";
+
     let body: any = payload;
-    if (!(payload instanceof FormData)) {
+    if (!isFormDataLike) {
       const parsed = createIdeaSchema.safeParse(payload);
 
       if (!parsed.success) {
@@ -75,8 +80,28 @@ export async function createIdea(payload: ICreateIdeaPayload | FormData) {
       };
     }
 
-    return await httpClient.post<MemberIdea>("/api/ideas", body);
+    return await httpClient.post<MemberIdea>("/api/ideas", body, {
+      timeout: 120000,
+    });
   } catch (error: any) {
+    // If server returned structured error (e.g., Zod validation), forward it
+    const serverData = error?.response?.data;
+    if (serverData && typeof serverData === "object") {
+      return {
+        success: serverData.success ?? false,
+        message:
+          serverData.message ||
+          serverData.error ||
+          error.message ||
+          "Failed to create idea.",
+        data: serverData.data ?? null,
+        // include any extra fields like errorSources for the UI
+        ...(serverData.errorSources
+          ? { errorSources: serverData.errorSources }
+          : {}),
+      } as any;
+    }
+
     return {
       success: false,
       message: error.message || "Failed to create idea.",
@@ -108,8 +133,26 @@ export async function updateIdea(
       };
     }
 
-    return await httpClient.patch<MemberIdea>(`/api/ideas/${ideaId}`, body);
+    return await httpClient.patch<MemberIdea>(`/api/ideas/${ideaId}`, body, {
+      timeout: 120000,
+    });
   } catch (error: any) {
+    const serverData = error?.response?.data;
+    if (serverData && typeof serverData === "object") {
+      return {
+        success: serverData.success ?? false,
+        message:
+          serverData.message ||
+          serverData.error ||
+          error.message ||
+          "Failed to update idea.",
+        data: serverData.data ?? null,
+        ...(serverData.errorSources
+          ? { errorSources: serverData.errorSources }
+          : {}),
+      } as any;
+    }
+
     return {
       success: false,
       message: error.message || "Failed to update idea.",
@@ -120,10 +163,7 @@ export async function updateIdea(
 
 export async function submitIdea(ideaId: string) {
   try {
-    return await httpClient.post<MemberIdea>(
-      `/api/ideas/${ideaId}/submit`,
-      {},
-    );
+    return await httpClient.post<MemberIdea>(`/api/ideas/${ideaId}/submit`, {});
   } catch (error: any) {
     return {
       success: false,

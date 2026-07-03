@@ -22,12 +22,19 @@ const axiosInstance = async () => {
     .join("; ");
   // eg Cookie: "accessToken=abc123; refreshToken=def456"
 
+  // Get origin for CORS requests - use environment variable or fallback to localhost
+  const origin =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    process.env.NEXT_PUBLIC_FRONTEND_URL ||
+    "http://localhost:3000";
+
   return axios.create({
     baseURL: API_BASE_URL,
     timeout: 30000,
     headers: {
       Accept: "application/json",
       Cookie: cookieHeader,
+      Origin: origin,
     },
   });
 };
@@ -35,6 +42,7 @@ const axiosInstance = async () => {
 export interface ApiRequestOptions {
   params?: Record<string, unknown>;
   headers?: Record<string, string>;
+  timeout?: number;
 }
 
 const mergeHeaders = (
@@ -49,7 +57,14 @@ const mergeHeaders = (
     (headerKey) => headerKey.toLowerCase() === "content-type",
   );
 
-  if (!hasContentType && !(data instanceof FormData)) {
+  // Detect FormData-like objects more robustly (handles server-side FormData
+  // shims or proxied form payloads that may not be instanceof FormData).
+  const isFormDataLike =
+    typeof data === "object" &&
+    data !== null &&
+    typeof (data as any).append === "function";
+
+  if (!hasContentType && !isFormDataLike) {
     mergedHeaders["Content-Type"] = "application/json";
   }
 
@@ -83,6 +98,7 @@ const httpPost = async <TData>(
     const response = await instance.post<ApiResponse<TData>>(endpoint, data, {
       params: options?.params,
       headers: mergeHeaders(options?.headers, data),
+      timeout: options?.timeout,
     });
     return response.data;
   } catch (error) {
@@ -100,7 +116,7 @@ const httpPut = async <TData>(
     const instance = await axiosInstance();
     const response = await instance.put<ApiResponse<TData>>(endpoint, data, {
       params: options?.params,
-      headers: options?.headers,
+      headers: mergeHeaders(options?.headers, data),
     });
     return response.data;
   } catch (error) {
@@ -118,7 +134,7 @@ const httpPatch = async <TData>(
     const instance = await axiosInstance();
     const response = await instance.patch<ApiResponse<TData>>(endpoint, data, {
       params: options?.params,
-      headers: options?.headers,
+      headers: mergeHeaders(options?.headers, data),
     });
     return response.data;
   } catch (error) {

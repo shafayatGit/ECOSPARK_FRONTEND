@@ -116,23 +116,31 @@ export function useMultiImageUpload(
       setError(null);
       setIsLoading(true);
 
-      // Validate files
-      const validationError = validateMultipleImages(files, maxFiles);
+      // Append files to existing selection while enforcing maxFiles
+      setSelectedFiles((prev) => {
+        const existingFiles = prev ?? [];
+        const combinedFiles = [...existingFiles.map((p) => p.file), ...files];
 
-      if (validationError) {
-        setError(validationError);
+        // Validate combined selection for count and size/type
+        const validationError = validateMultipleImages(combinedFiles, maxFiles);
+        if (validationError) {
+          setError(validationError);
+          setIsLoading(false);
+          return existingFiles;
+        }
+
+        // Convert files to preview objects, but only up to maxFiles
+        const newPreviewData: ImagePreviewData[] = [
+          ...existingFiles,
+          ...files.map((file) => ({
+            file,
+            previewUrl: createImagePreviewUrl(file),
+          })),
+        ].slice(0, maxFiles);
+
         setIsLoading(false);
-        return;
-      }
-
-      // Create previews
-      const newFiles: ImagePreviewData[] = files.map((file) => ({
-        file,
-        previewUrl: createImagePreviewUrl(file),
-      }));
-
-      setSelectedFiles(newFiles);
-      setIsLoading(false);
+        return newPreviewData;
+      });
     },
     [maxFiles],
   );

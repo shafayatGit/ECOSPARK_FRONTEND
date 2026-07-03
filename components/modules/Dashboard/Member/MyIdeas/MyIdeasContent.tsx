@@ -100,7 +100,12 @@ const MyIdeasContent = () => {
     ...(status !== "ALL" ? { status } : {}),
   };
 
-  const { data: response, isLoading, isFetching, refetch } = useQuery({
+  const {
+    data: response,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useQuery({
     queryKey: ["my-ideas", queryParams],
     queryFn: () => getMyIdeas(queryParams),
   });
@@ -286,7 +291,9 @@ const MyIdeasContent = () => {
                 </EmptyDescription>
               </EmptyHeader>
               <Button asChild>
-                <Link href="/dashboard/create-idea">Create your first idea</Link>
+                <Link href="/dashboard/create-idea">
+                  Create your first idea
+                </Link>
               </Button>
             </Empty>
           ) : (

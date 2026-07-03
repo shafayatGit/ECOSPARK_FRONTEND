@@ -174,7 +174,7 @@ export async function changePassword(payload: IChangePasswordPayload) {
         }
       : await buildJsonRequestHeaders();
 
-    const res = await fetch(`${BASE_API_URL}/api/auth/change-password`, {
+    const res = await fetch(`${BASE_API_URL}/auth/change-password`, {
       method: "POST",
       headers,
       credentials: isClient ? "include" : undefined,
@@ -188,9 +188,13 @@ export async function changePassword(payload: IChangePasswordPayload) {
     const result = await res.json();
 
     if (!res.ok) {
+      const errorMessage = formatErrorDisplay(
+        result?.message || "Failed to change password.",
+        { context: "general" },
+      );
       return {
         success: false,
-        message: result?.message || "Failed to change password.",
+        message: errorMessage,
         data: null,
       };
     }
