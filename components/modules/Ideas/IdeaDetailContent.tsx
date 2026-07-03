@@ -14,8 +14,8 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { formatDistanceToNow } from "date-fns";
 import { AlertCircle, ArrowLeft, Lock } from "lucide-react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import CommentThread from "./CommentThread";
 import VoteButtons from "./VoteButtons";
@@ -29,6 +29,7 @@ const IdeaDetailContent = ({
   ideaId,
   isAuthenticated,
 }: IdeaDetailContentProps) => {
+  const router = useRouter();
   const searchParams = useSearchParams();
 
   const {
@@ -76,15 +77,67 @@ const IdeaDetailContent = ({
     },
   });
 
+  const [isCheckingPayment, setIsCheckingPayment] = useState(false);
+  const [paymentCheckAttempts, setPaymentCheckAttempts] = useState(0);
+
   useEffect(() => {
     const payment = searchParams.get("payment");
+    if (!payment) {
+      return;
+    }
+
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.delete("payment");
+    const nextQuery = nextParams.toString();
+    const nextUrl = `/ideas/${ideaId}${nextQuery ? `?${nextQuery}` : ""}`;
+
     if (payment === "success") {
       toast.success("Payment completed. Refreshing idea access...");
+      setIsCheckingPayment(true);
+      setPaymentCheckAttempts(0);
       refetch();
     } else if (payment === "cancelled") {
       toast.message("Checkout cancelled");
     }
-  }, [searchParams, refetch]);
+
+    router.replace(nextUrl);
+  }, [ideaId, refetch, router, searchParams]);
+
+  useEffect(() => {
+    if (!isCheckingPayment || isLoading || !ideaResponse?.data) {
+      return;
+    }
+
+    const idea = ideaResponse.data;
+    const hasFullAccess = idea.isPaid ? !!idea.hasFullAccess : true;
+    const isPremiumLocked = idea.isPaid && !hasFullAccess;
+
+    if (!isPremiumLocked) {
+      setIsCheckingPayment(false);
+      return;
+    }
+
+    if (paymentCheckAttempts >= 5) {
+      toast.error(
+        "Payment is still processing. Please wait a moment and refresh the page.",
+      );
+      setIsCheckingPayment(false);
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      refetch();
+      setPaymentCheckAttempts((count) => count + 1);
+    }, 2000);
+
+    return () => window.clearTimeout(timer);
+  }, [
+    isCheckingPayment,
+    paymentCheckAttempts,
+    isLoading,
+    ideaResponse,
+    refetch,
+  ]);
 
   const handlePurchase = () => {
     if (!isAuthenticated) {
@@ -125,7 +178,7 @@ const IdeaDetailContent = ({
   }
 
   const idea = ideaResponse.data;
-  const hasFullAccess = idea.hasFullAccess ?? !idea.isPaid;
+  const hasFullAccess = idea.isPaid ? !!idea.hasFullAccess : true;
   const isPremiumLocked = idea.isPaid && !hasFullAccess;
   const canViewDiscussion = !isPremiumLocked || idea.isAuthor;
   const userVote = (voteResponse?.data?.type as VoteType | undefined) ?? null;
