@@ -15,6 +15,7 @@ import { getDefaultDashboardRoute } from "@/lib/authUtils";
 import { getUserInfo, logoutUser } from "@/service/auth.service";
 
 const navLinks = [
+  { href: "/", label: "Home" },
   { href: "/ideas", label: "Ideas" },
   { href: "/categories", label: "Categories" },
   { href: "/about", label: "About" },

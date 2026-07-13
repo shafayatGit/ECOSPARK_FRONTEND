@@ -3,6 +3,7 @@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/formatters";
 import { getComments } from "@/service/comments.service";
@@ -79,6 +80,7 @@ const IdeaDetailContent = ({
 
   const [isCheckingPayment, setIsCheckingPayment] = useState(false);
   const [paymentCheckAttempts, setPaymentCheckAttempts] = useState(0);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const payment = searchParams.get("payment");
@@ -301,12 +303,19 @@ const IdeaDetailContent = ({
                 <h2 className="font-heading text-xl font-semibold">Images</h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {idea.imageUrls.map((url, index) => (
-                    <img
+                    <button
                       key={url}
-                      src={url}
-                      alt={`${idea.title} image ${index + 1}`}
-                      className="aspect-video w-full rounded-xl border object-cover"
-                    />
+                      type="button"
+                      onClick={() => setSelectedImage(url)}
+                      className="overflow-hidden rounded-xl border focus:outline-none focus:ring-2 focus:ring-primary"
+                      aria-label={`View ${idea.title} image ${index + 1}`}
+                    >
+                      <img
+                        src={url}
+                        alt={`${idea.title} image ${index + 1}`}
+                        className="aspect-video w-full object-cover transition-transform duration-200 hover:scale-105"
+                      />
+                    </button>
                   ))}
                 </div>
               </section>
@@ -322,6 +331,27 @@ const IdeaDetailContent = ({
           )}
         </div>
       </div>
+
+      <Dialog
+        open={!!selectedImage}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedImage(null);
+          }
+        }}
+      >
+        <DialogContent className="max-w-5xl border-0 bg-background/95 p-0 sm:max-w-5xl">
+          {selectedImage ? (
+            <div className="p-2">
+              <img
+                src={selectedImage}
+                alt={`${idea.title} full view`}
+                className="max-h-[80vh] w-full rounded-lg object-contain"
+              />
+            </div>
+          ) : null}
+        </DialogContent>
+      </Dialog>
 
       {canViewDiscussion && (
         <section className="border-t pt-8">

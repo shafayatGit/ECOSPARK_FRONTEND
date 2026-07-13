@@ -52,10 +52,13 @@ function getCategoryIcon(slug: string) {
 }
 
 export default async function TopCategories() {
-  const response = await getCategories({ limit: 6 });
+  const response = await getCategories({ limit: 100 });
   const categories = response?.success && response.data ? response.data : [];
+  const topCategories = [...categories]
+    .sort((a, b) => (b._count?.ideas ?? 0) - (a._count?.ideas ?? 0))
+    .slice(0, 3);
 
-  if (categories.length === 0) {
+  if (topCategories.length === 0) {
     return null; // Don't show the section if no categories exist
   }
 
@@ -76,10 +79,16 @@ export default async function TopCategories() {
               Top Sustainability Categories
             </h2>
             <p className="text-muted-foreground text-base md:text-lg">
-              Explore impact-driven sustainability ideas organized by sectors. Select a topic to browse approved ideas and solutions.
+              Explore impact-driven sustainability ideas organized by sectors.
+              Select a topic to browse approved ideas and solutions.
             </p>
           </div>
-          <Button asChild variant="outline" size="lg" className="rounded-xl font-medium group border-primary/20 hover:bg-primary/5">
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="rounded-xl font-medium group border-primary/20 hover:bg-primary/5"
+          >
             <Link href="/categories">
               View All Categories
               <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
@@ -88,7 +97,7 @@ export default async function TopCategories() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-          {categories.map((category) => {
+          {topCategories.map((category) => {
             const IconComponent = getCategoryIcon(category.slug);
             const ideaCount = category._count?.ideas ?? 0;
 
@@ -99,20 +108,23 @@ export default async function TopCategories() {
                 className="group relative block rounded-2xl transition-all duration-300"
               >
                 {/* Glow border on hover */}
-                <div className="absolute -inset-[1px] rounded-2xl bg-linear-to-r from-primary to-emerald-500 opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
-                
-                <Card className="relative h-full bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl transition-all duration-300 group-hover:bg-card/90 group-hover:translate-y-[-4px] overflow-hidden">
+                <div className="absolute -inset-px rounded-2xl bg-linear-to-r from-primary to-emerald-500 opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
+
+                <Card className="relative h-full bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl transition-all duration-300 group-hover:bg-card/90 group-hover:-translate-y-1 overflow-hidden">
                   <div className="absolute top-0 right-0 p-6 opacity-[0.03] text-foreground transition-opacity duration-300 group-hover:opacity-[0.06]">
                     <IconComponent className="size-36" />
                   </div>
-                  
-                  <CardContent className="p-8 flex flex-col justify-between h-full min-h-[220px]">
+
+                  <CardContent className="p-8 flex flex-col justify-between h-full min-h-55">
                     <div className="space-y-6">
                       <div className="flex items-center justify-between">
                         <div className="w-12 h-12 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:bg-primary group-hover:text-primary-foreground shadow-xs">
                           <IconComponent className="size-6" />
                         </div>
-                        <Badge variant="secondary" className="px-3 py-1 rounded-full text-xs font-medium">
+                        <Badge
+                          variant="secondary"
+                          className="px-3 py-1 rounded-full text-xs font-medium"
+                        >
                           {ideaCount} {ideaCount === 1 ? "Idea" : "Ideas"}
                         </Badge>
                       </div>
@@ -122,7 +134,8 @@ export default async function TopCategories() {
                           {category.name}
                         </h3>
                         <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-                          {category.description || `Explore eco-friendly innovations and projects focused on ${category.name.toLowerCase()}.`}
+                          {category.description ||
+                            `Explore eco-friendly innovations and projects focused on ${category.name.toLowerCase()}.`}
                         </p>
                       </div>
                     </div>

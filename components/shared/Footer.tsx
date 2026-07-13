@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
+import { Logo } from "./Header";
 
 const footerLinks = {
   platform: [
@@ -28,9 +29,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1">
             <Link href="/" className="inline-block mb-4">
-              <span className="text-xl font-semibold tracking-tight">
-                EcoSpark Hub
-              </span>
+              <Logo />
             </Link>
             <p className="text-sm text-muted-foreground mb-4 max-w-xs">
               A community platform for sharing and developing sustainability
