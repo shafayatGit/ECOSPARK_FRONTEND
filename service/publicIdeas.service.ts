@@ -2,6 +2,7 @@
 "use server";
 
 import { httpClient } from "@/lib/axios/httpClient";
+import { fetchCachedPublicApi } from "@/lib/publicApi";
 import { ApiResponse, PaginationMeta } from "@/types/api.types";
 import { PublicIdea, PublicIdeaDetail } from "@/types/idea.types";
 import {
@@ -49,7 +50,7 @@ export async function getPublicIdeas(
       };
     }
 
-    return await httpClient.get<PublicIdea[]>("/api/ideas", {
+    return await fetchCachedPublicApi<ListResponse<PublicIdea>>("/api/ideas", {
       params: parsed.data,
     });
   } catch (error: any) {

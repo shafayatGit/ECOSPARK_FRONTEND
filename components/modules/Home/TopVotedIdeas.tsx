@@ -1,7 +1,12 @@
 import { getPublicIdeas } from "@/service/publicIdeas.service";
 import { getUserInfo } from "@/service/auth.service";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
@@ -17,12 +22,15 @@ import { formatCurrency } from "@/lib/formatters";
 import { getVoteScore, truncatePreview } from "@/lib/ideaUtils";
 
 export default async function TopVotedIdeas() {
-  const [ideasResponse, user] = await Promise.all([
+  const [ideasResponse, userInfo] = await Promise.all([
     getPublicIdeas({ sort: "topVoted", limit: 3 }),
     getUserInfo(),
   ]);
 
-  const ideas = ideasResponse?.success && ideasResponse.data ? ideasResponse.data : [];
+  const isLoggedIn = !!userInfo;
+
+  const ideas =
+    ideasResponse?.success && ideasResponse.data ? ideasResponse.data : [];
 
   if (ideas.length === 0) {
     return null; // Don't show the section if no ideas exist
@@ -31,7 +39,7 @@ export default async function TopVotedIdeas() {
   return (
     <section className="relative overflow-hidden py-24 px-4 md:px-6 lg:px-8 bg-background">
       {/* Background Decorative Radial Gradient */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 h-[500px] w-[500px] rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 h-125 w-125 rounded-full bg-primary/5 blur-[120px] pointer-events-none" />
 
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
@@ -44,10 +52,16 @@ export default async function TopVotedIdeas() {
               Top Voted Solutions
             </h2>
             <p className="text-muted-foreground text-base md:text-lg">
-              Explore the most popular ideas backed by our community. Upvote, discuss, and support innovations that drive green impact.
+              Explore the most popular ideas backed by our community. Upvote,
+              discuss, and support innovations that drive green impact.
             </p>
           </div>
-          <Button asChild variant="outline" size="lg" className="rounded-xl font-medium group border-primary/20 hover:bg-primary/5">
+          <Button
+            asChild
+            variant="outline"
+            size="lg"
+            className="rounded-xl font-medium group border-primary/20 hover:bg-primary/5"
+          >
             <Link href="/ideas">
               Explore All Ideas
               <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
@@ -66,27 +80,37 @@ export default async function TopVotedIdeas() {
                 className="group relative flex flex-col rounded-2xl transition-all duration-300"
               >
                 {/* Glow border on hover */}
-                <div className="absolute -inset-[1px] rounded-2xl bg-linear-to-r from-emerald-500 to-primary opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
+                <div className="absolute -inset-px rounded-2xl bg-linear-to-r from-emerald-500 to-primary opacity-0 blur-sm transition-opacity duration-300 group-hover:opacity-100" />
 
-                <Card className="relative flex flex-col h-full bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl transition-all duration-300 group-hover:bg-card/90 group-hover:translate-y-[-4px] overflow-hidden">
+                <Card className="relative flex flex-col h-full bg-card/60 backdrop-blur-md border border-border/80 rounded-2xl transition-all duration-300 group-hover:bg-card/90 group-hover:-translate-y-1 overflow-hidden">
                   <CardHeader className="p-6 pb-4 space-y-4">
                     <div className="flex items-center justify-between gap-2">
-                      <Badge variant="outline" className="text-xs font-medium border-primary/30 text-primary">
+                      <Badge
+                        variant="outline"
+                        className="text-xs font-medium border-primary/30 text-primary"
+                      >
                         {idea.category.name}
                       </Badge>
                       {isPremium && (
-                        <Badge variant="secondary" className="flex items-center gap-1 bg-amber-500/10 text-amber-600 border border-amber-500/20 dark:bg-amber-400/10 dark:text-amber-400">
+                        <Badge
+                          variant="secondary"
+                          className="flex items-center gap-1 bg-amber-500/10 text-amber-600 border border-amber-500/20 dark:bg-amber-400/10 dark:text-amber-400"
+                        >
                           <Lock className="size-3" />
-                          <span>{idea.price ? formatCurrency(idea.price) : "Premium"}</span>
+                          <span>
+                            {idea.price
+                              ? formatCurrency(idea.price)
+                              : "Premium"}
+                          </span>
                         </Badge>
                       )}
                     </div>
 
-                    <Link href={`/ideas/${idea.id}`} className="block">
+                    <div className="block">
                       <h3 className="text-xl font-semibold text-foreground font-heading leading-snug tracking-tight hover:text-primary transition-colors line-clamp-2">
                         {idea.title}
                       </h3>
-                    </Link>
+                    </div>
                   </CardHeader>
 
                   <CardContent className="px-6 pb-6 flex-1 flex flex-col justify-between">
@@ -97,7 +121,10 @@ export default async function TopVotedIdeas() {
                       {isPremium && (
                         <p className="mt-3 text-xs text-muted-foreground/80 italic flex items-center gap-1.5">
                           <Lock className="size-3 text-amber-500" />
-                          <span>Purchase to unlock proposed solutions & descriptions.</span>
+                          <span>
+                            Purchase to unlock proposed solutions &
+                            descriptions.
+                          </span>
                         </p>
                       )}
                     </div>
@@ -126,24 +153,28 @@ export default async function TopVotedIdeas() {
                     </div>
                   </CardContent>
 
-                  <CardFooter className="p-6 pt-0 border-t border-border/30 bg-muted/10 flex items-center justify-between text-xs text-muted-foreground mt-auto">
+                  <CardFooter className="pt-4 border-t border-border/30 bg-muted/10 flex items-center justify-between text-xs text-muted-foreground mt-auto">
                     <div className="flex items-center gap-4">
                       <div
                         className="inline-flex items-center gap-1 bg-background/50 border border-border/60 px-2 py-1 rounded-lg"
                         title={`${idea.upvoteCount} upvotes, ${idea.downvoteCount} downvotes`}
                       >
                         <ArrowBigUp className="size-4.5 text-emerald-600 dark:text-emerald-400 fill-current" />
-                        <span className="font-semibold text-foreground text-sm">{score}</span>
+                        <span className="font-semibold text-foreground text-sm">
+                          {score}
+                        </span>
                         <ArrowBigDown className="size-4.5 text-red-500" />
                       </div>
                       <div className="inline-flex items-center gap-1.5 bg-background/50 border border-border/60 px-2.5 py-1 rounded-lg">
                         <MessageSquare className="size-4" />
-                        <span className="font-medium text-foreground text-sm">{idea._count.comments}</span>
+                        <span className="font-medium text-foreground text-sm">
+                          {idea._count.comments}
+                        </span>
                       </div>
                     </div>
 
                     <div>
-                      {user ? (
+                      {isLoggedIn ? (
                         <Link
                           href={`/ideas/${idea.id}`}
                           className="inline-flex items-center text-xs font-semibold text-primary hover:underline group/btn"
@@ -152,13 +183,14 @@ export default async function TopVotedIdeas() {
                           <ArrowRight className="ml-1 size-3.5 transition-transform group-hover/btn:translate-x-0.5" />
                         </Link>
                       ) : (
-                        <Link
-                          href={`/register`}
-                          className="inline-flex items-center text-xs font-semibold text-primary hover:underline group/btn"
+                        <Button
+                          asChild
+                          variant="outline"
+                          size="sm"
+                          className="rounded-lg text-xs font-semibold text-primary border-primary/30 hover:bg-primary/5"
                         >
-                          Join to view
-                          <ArrowRight className="ml-1 size-3.5 transition-transform group-hover/btn:translate-x-0.5" />
-                        </Link>
+                          <Link href="/register">Register to see details</Link>
+                        </Button>
                       )}
                     </div>
                   </CardFooter>

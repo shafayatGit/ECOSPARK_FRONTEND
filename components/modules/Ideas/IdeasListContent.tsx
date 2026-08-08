@@ -29,8 +29,6 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import IdeaCard from "./IdeaCard";
-import { ILoginResponse } from "@/types/auth.types";
-import { UserInfo } from "@/types/user.types";
 
 const SORT_OPTIONS = [
   { value: "recent", label: "Most recent" },
@@ -46,10 +44,13 @@ const PAID_OPTIONS = [
 
 interface IdeasListContentProps {
   initialCategory?: string;
-  user: UserInfo;
+  isLoggedIn: boolean;
 }
 
-const IdeasListContent = ({ initialCategory, user }: IdeasListContentProps) => {
+const IdeasListContent = ({
+  initialCategory,
+  isLoggedIn,
+}: IdeasListContentProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -203,7 +204,7 @@ const IdeasListContent = ({ initialCategory, user }: IdeasListContentProps) => {
               })
             }
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-45">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
@@ -226,7 +227,7 @@ const IdeasListContent = ({ initialCategory, user }: IdeasListContentProps) => {
             value={sortParam}
             onValueChange={(value) => updateParams({ sort: value, page: null })}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-45">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
@@ -247,7 +248,7 @@ const IdeasListContent = ({ initialCategory, user }: IdeasListContentProps) => {
               })
             }
           >
-            <SelectTrigger className="w-[160px]">
+            <SelectTrigger className="w-40">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
             <SelectContent>
@@ -302,7 +303,7 @@ const IdeasListContent = ({ initialCategory, user }: IdeasListContentProps) => {
         <>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
             {ideas.map((idea) => (
-              <IdeaCard key={idea.id} idea={idea} user={user} />
+              <IdeaCard key={idea.id} idea={idea} isLoggedIn={isLoggedIn} />
             ))}
           </div>
 

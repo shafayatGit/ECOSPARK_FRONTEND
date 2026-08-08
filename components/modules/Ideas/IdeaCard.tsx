@@ -1,5 +1,6 @@
 "use client";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,14 +12,13 @@ import { getVoteScore, truncatePreview } from "@/lib/ideaUtils";
 import { PublicIdea } from "@/types/idea.types";
 import { ArrowBigDown, ArrowBigUp, Lock, MessageSquare } from "lucide-react";
 import Link from "next/link";
-import { UserInfo } from "@/types/user.types";
 
 interface IdeaCardProps {
   idea: PublicIdea;
-  user: UserInfo;
+  isLoggedIn: boolean;
 }
 
-const IdeaCard = ({ idea, user }: IdeaCardProps) => {
+const IdeaCard = ({ idea, isLoggedIn }: IdeaCardProps) => {
   const score = getVoteScore(idea.upvoteCount, idea.downvoteCount);
 
   return (
@@ -33,11 +33,11 @@ const IdeaCard = ({ idea, user }: IdeaCardProps) => {
             </Badge>
           )}
         </div>
-        <Link href={`/ideas/${idea.id}`} className="block">
+        <div className="block">
           <h3 className="font-heading line-clamp-2 text-lg font-semibold leading-snug tracking-tight transition-colors group-hover:text-primary">
             {idea.title}
           </h3>
-        </Link>
+        </div>
         <p className="text-sm text-muted-foreground">by {idea.author.name}</p>
       </CardHeader>
 
@@ -68,7 +68,7 @@ const IdeaCard = ({ idea, user }: IdeaCardProps) => {
           </span>
         </div>
         <div className="flex items-center gap-3">
-          {user ? (
+          {isLoggedIn ? (
             <Link
               href={`/ideas/${idea.id}`}
               className="text-sm font-medium text-primary hover:underline"
@@ -76,12 +76,14 @@ const IdeaCard = ({ idea, user }: IdeaCardProps) => {
               Read more
             </Link>
           ) : (
-            <Link
-              href={`/register`}
-              className="text-sm font-medium text-primary hover:underline"
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="rounded-lg text-xs font-semibold text-primary border-primary/30 hover:bg-primary/5"
             >
-              Login to see more
-            </Link>
+              <Link href="/register">Register to see details</Link>
+            </Button>
           )}
         </div>
       </CardFooter>

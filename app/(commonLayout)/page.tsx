@@ -6,8 +6,9 @@ import FAQ from "@/components/shared/FAQ";
 import { HeroSection } from "@/components/ui/hero-3";
 import TopCategories from "@/components/modules/Home/TopCategories";
 import TopVotedIdeas from "@/components/modules/Home/TopVotedIdeas";
-import { getUserInfo } from "@/service/auth.service";
 import React from "react";
+
+export const revalidate = 600;
 
 const CommonLayoutPage = async () => {
   return (

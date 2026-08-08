@@ -2,6 +2,7 @@
 "use server";
 
 import { httpClient } from "@/lib/axios/httpClient";
+import { fetchCachedPublicApi } from "@/lib/publicApi";
 import { ApiResponse, PaginationMeta } from "@/types/api.types";
 import { Category } from "@/types/category.types";
 import {
@@ -28,9 +29,12 @@ export async function getCategories(
       };
     }
 
-    return await httpClient.get<Category[]>("/api/categories", {
-      params: parsed.data,
-    });
+    return await fetchCachedPublicApi<ListResponse<Category>>(
+      "/api/categories",
+      {
+        params: parsed.data,
+      },
+    );
   } catch (error: any) {
     return {
       success: false,
